@@ -589,6 +589,7 @@ The PRs below have more information around the breaking changes:
   incompatible database migration that requires downtime. Once the
   db migration succeeds, the web server needs to be restarted with the
   new version. The previous version will fail
+
 - [4565](https://github.com/apache/superset/pull/4565) : we've
   changed the security model a bit where in the past you would have to
   define your authentication scheme by inheriting from Flask
