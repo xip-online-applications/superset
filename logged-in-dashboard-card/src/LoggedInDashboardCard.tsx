@@ -17,7 +17,7 @@
  * under the License.
  */
 import React, {useEffect, useState} from 'react';
-import {makeApi, styled} from '@superset-ui/core';
+import { t, makeApi, styled } from '@superset-ui/core';
 import { LoggedInDashboardCardProps, LoggedInDashboardCardStylesProps } from './types';
 import { Button, Col, Row, Avatar, Divider, Badge } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
@@ -56,7 +56,7 @@ export default function LoggedInDashboardCard(props: LoggedInDashboardCardProps)
 
 
   useEffect(() => {
-    getMe().then((user) => setUser(user.result));
+    getMe(undefined, undefined).then((user) => setUser(user.result));
   }, []);
 
   return (
@@ -73,23 +73,14 @@ export default function LoggedInDashboardCard(props: LoggedInDashboardCardProps)
         <Col flex={"auto"}>
           <h3 style={{marginTop: "8px"}}>{user?.first_name} {user?.last_name}</h3>
           <p>{user?.email}</p>
-          {/*<p>{user?.username}</p>*/}
           <Divider />
-
           <Button
             type="primary"
             size="large"
             key="link"
             href="/logout"
-          >Uitloggen</Button>
+          >{t('Uitloggen')}</Button>
         </Col>
-        {/*<Col span={6}>*/}
-        {/*  <Button*/}
-        {/*    type="primary"*/}
-        {/*    key="link"*/}
-        {/*    href="/logout"*/}
-        {/*    >Uitloggen</Button>*/}
-        {/*</Col>*/}
       </Row>
     </Styles>
   );
