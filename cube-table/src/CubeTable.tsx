@@ -23,7 +23,6 @@ import { CubeTableProps, CubeTableStylesProps } from './types';
 import { Table, Dropdown, Space, Button, Menu, Modal } from "antd";
 import { DownOutlined } from '@ant-design/icons';
 import { socket } from './socket';
-import { v4 as uuidv4 } from 'uuid';
 import {interval} from "rxjs";
 import axios from "axios";
 
@@ -35,7 +34,7 @@ const Styles = styled.div<CubeTableStylesProps>`
 `;
 
 export default function CubeTable(props: CubeTableProps) {
-  const { height, width, filters, dataset, dimensions, actions, blockingAction} = props;
+  const { height, width, filters, cube, actions, blockingAction, cubeFilters, rowLimit} = props;
   const [data, setData] = React.useState([]);
 
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -122,7 +121,6 @@ export default function CubeTable(props: CubeTableProps) {
   };
 
   const cubejsApi = cubejs(options.apiToken, options);
-  const queryDimensions = dimensions.map((dimension: string) => dataset + "." + dimension);
 
   const onClick: (data: any, filters: Array<any>) => ((e: any) => void) = (data, filters) => {
     return (e) => {
@@ -166,22 +164,39 @@ export default function CubeTable(props: CubeTableProps) {
   const [cols, setCols] = React.useState([]);
 
   useEffect(() => {
+    const dimensions = cube.map((c) => c.value.name);
+    const cubeName = cube.map((item) => item.value.cube_name)[0];
+    const combinedFilters = [...filters, ...cubeFilters];
+
+    const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
+      .map((item) => {
+        return {
+          member: item.col,
+          operator: item.op,
+          values: Array.isArray(item.val) ? item.val : [ item.val ]
+        }
+      });
+
+    const query = {
+      dimensions,
+      limit: 500,
+      filters: applicableFilters
+    };
+
     cubejsApi
-      .load({
-        dimensions: queryDimensions,
-      })
+      .load(query)
       .then((result) => {
         setData(result.loadResponse.results[0].data);
       });
-  }, []);
+  }, [cube, cubeFilters, rowLimit, filters]);
 
   useEffect(() => {
     const newCols = [
-      ...dimensions.map((dimension: string) => {
+      ...cube.map((c: string) => {
         return {
-          title: dimension,
-          dataIndex: dataset + "." + dimension,
-          key: dataset + "." + dimension,
+          title: c.value.shortTitle,
+          dataIndex: c.value.name,
+          key: c.value.name,
         }
       })
     ];

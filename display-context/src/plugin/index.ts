@@ -38,6 +38,7 @@ export default class DisplayContext extends ChartPlugin {
       description: 'Display Context',
       name: t('Display Context'),
       thumbnail,
+      tags: ['xip', 'cube']
     });
 
     super({

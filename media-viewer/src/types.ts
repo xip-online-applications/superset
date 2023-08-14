@@ -25,8 +25,18 @@ import {
 export interface MediaViewerStylesProps {
 }
 
+//TODO import the proper type from superset-ui
+export type CubeFilterSelectOptionDuplicate = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
 interface MediaViewerCustomizeProps {
-  headerText: string;
+  cubeSingle: Array<any>;
+  cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
+  filters: Array<any>;
 }
 
 export type MediaViewerQueryFormData = QueryFormData &

@@ -26,9 +26,17 @@ export interface DisplayContextStylesProps {
   width: number;
 }
 
+//TODO import the proper type from superset-ui
+export type CubeFilterSelectOptionDuplicate = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
 interface DisplayContextCustomizeProps {
-  dataset: string;
-  dimensions: Array<string>;
+  cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
+  cube: Array<any>;
   filters: Array<any>;
   handlebarsDataTemplate?: string;
   handlebarsEmptyTemplate?: string;

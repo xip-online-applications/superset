@@ -138,6 +138,7 @@
     "classnames": "^2.2.5",
     "core-js": "^3.6.5",
     "cube-burndown-chart": "file:../cube-burndown-chart",
+    "cube-native-superset": "file:../cube-native-superset",
     "cube-progress": "file:../cube-progress",
     "cube-table": "file:../cube-table",
     "d3-array": "^1.2.4",

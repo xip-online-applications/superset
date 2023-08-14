@@ -31,7 +31,7 @@ const Styles = styled.div<DisplayContextStylesProps>`
 `;
 
 export default function DisplayContext(props: DisplayContextProps) {
-  const { height, width, filters, dataset , handlebarsDataTemplate, handlebarsEmptyTemplate, styleTemplate, dimensions} = props;
+  const { height, width, filters, handlebarsDataTemplate, handlebarsEmptyTemplate, styleTemplate, cube, cubeFilters} = props;
   const [data, setData] = React.useState({});
 
   const options = {
@@ -40,30 +40,37 @@ export default function DisplayContext(props: DisplayContextProps) {
   };
 
   const cubejsApi = cubejs(options.apiToken, options);
-  const appliedFilters = filters.find((filter) => filter.dataset === dataset);
-
-  const queryDimensions = dimensions.map((dimension: string) => dataset + "." + dimension);
 
   useEffect(() => {
-    if (appliedFilters) {
-      const filter = {
-        "member": dataset + "." + appliedFilters.col,
-        "operator": "equals",
-        "values": appliedFilters.val
+    const dimensions = cube.map((c) => c.value.name);
+    const cubeName = cube.map((item) => item.value.cube_name)[0];
+    const combinedFilters = [...filters, ...cubeFilters];
+
+    const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
+      .map((item) => {
+        return {
+          member: item.col,
+          operator: item.op,
+          values: Array.isArray(item.val) ? item.val : [item.val]
+        }
+      });
+
+    if (applicableFilters.length > 0) {
+      const query = {
+        dimensions,
+        limit: 500,
+        filters: applicableFilters
       };
 
       cubejsApi
-        .load({
-          dimensions: queryDimensions,
-          filters: [filter],
-        })
+        .load(query)
         .then((result) => {
           const tempData = removeKeyDot(result.loadResponse.results[0].data[0]);
           tempData['all'] = JSON.stringify(tempData);
           setData(tempData);
         });
     }
-  }, [appliedFilters?.val]);
+  }, [cube, cubeFilters, filters]);
 
   const objectEmpty = Object.keys(data).length === 0;
 

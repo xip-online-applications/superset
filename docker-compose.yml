@@ -33,6 +33,7 @@ x-superset-volumes: &superset-volumes
   - ./media-viewer:/app/media-viewer
   - ./cube-progress:/app/cube-progress
   - ./cube-burndown-chart:/app/cube-burndown-chart
+  - ./cube-native-superset:/app/cube-native-superset
 
 version: "3.7"
 services:
@@ -52,6 +53,7 @@ services:
     restart: unless-stopped
     ports:
       - "5434:5433"
+      - "5432:5432"
     volumes:
       - db_home:/var/lib/postgresql/data
 

@@ -32,20 +32,36 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'all_columns',
+            name: 'cube',
             config: {
-              ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Required Columns in the datafields'),
-              validators: [validateNonEmpty],
-            },
+              type: 'DndCubeSelect',
+              label: t('Cube Columns'),
+              description: t('Cube Columns to display'),
+              default: [validateNonEmpty],
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube-filters',
+            config: {
+              type: 'CubeAdHocFilterControl',
+              label: t('Cube Filters'),
+              description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'row_limit',
+            config: sharedControls.row_limit,
           },
         ],
-        ['adhoc_filters'],
       ],
     },
     {
-      label: t('TODO FOR BUTTONS!'),
+      label: t('Actie knoppen!'),
       expanded: true,
       controlSetRows: [
         [
@@ -70,20 +86,6 @@ const config: ControlPanelConfig = {
               default: true,
               description: t(
                 'Makes the dashboard wait for a response from the form'
-              ),
-            },
-          },
-        ],
-        [
-          {
-            name: 'cube_query',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Cube Query'),
-              renderTrigger: true,
-              default: false,
-              description: t(
-                'Uses the native cube query instead of the regular query'
               ),
             },
           },

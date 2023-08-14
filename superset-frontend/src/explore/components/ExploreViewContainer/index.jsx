@@ -68,6 +68,7 @@ import ConnectedControlPanelsContainer from '../ControlPanelsContainer';
 import SaveModal from '../SaveModal';
 import DataSourcePanel from '../DatasourcePanel';
 import ConnectedExploreChartHeader from '../ExploreChartHeader';
+import CubeControlPanel from "../CubeControlPanel";
 
 const propTypes = {
   ...ExploreChartPanel.propTypes,
@@ -119,6 +120,7 @@ const ExplorePanelContainer = styled.div`
       background-color: ${theme.colors.grayscale.light5};
       padding: ${theme.gridUnit * 2}px 0;
       border-right: 1px solid ${theme.colors.grayscale.light2};
+      overflow: auto;
     }
     .main-explore-content {
       flex: 1;
@@ -628,14 +630,19 @@ function ExploreViewContainer(props) {
               />
             </span>
           </div>
-          <DataSourcePanel
+          <CubeControlPanel
             formData={props.form_data}
-            datasource={props.datasource}
-            controls={props.controls}
             actions={props.actions}
             shouldForceUpdate={shouldForceUpdate}
-            user={props.user}
-          />
+          ></CubeControlPanel>
+          {/*<DataSourcePanel*/}
+          {/*  formData={props.form_data}*/}
+          {/*  datasource={props.datasource}*/}
+          {/*  controls={props.controls}*/}
+          {/*  actions={props.actions}*/}
+          {/*  shouldForceUpdate={shouldForceUpdate}*/}
+          {/*  user={props.user}*/}
+          {/*/>*/}
         </Resizable>
         {isCollapsed ? (
           <div

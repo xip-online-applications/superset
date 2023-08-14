@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {createRef, useState} from 'react';
+import React, {createRef, useEffect, useState} from 'react';
 import { styled } from '@superset-ui/core';
 import { MediaViewerProps, MediaViewerStylesProps } from './types';
 import { Image } from 'antd';
+import cubejs from "@cubejs-client/core";
 
 const Styles = styled.div<MediaViewerStylesProps>`
   padding: ${({ theme }) => theme.gridUnit * 4}px;
@@ -34,7 +35,9 @@ const contentStyle: React.CSSProperties = {
 };
 
 export default function MediaViewer(props: MediaViewerProps) {
+  const { height, width , cubeFilters, cubeSingle, filters} = props;
   const [visible, setVisible] = useState(false);
+  const [singleData, setSingleData] = React.useState([]);
 
   const [images, setImages] = useState(
     [
@@ -44,6 +47,43 @@ export default function MediaViewer(props: MediaViewerProps) {
     ]
   );
   const rootElem = createRef<HTMLDivElement>();
+
+
+  const options = {
+    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
+    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+  };
+
+  const cubejsApi = cubejs(options.apiToken, options);
+
+  useEffect(() => {
+    const dimensions = cubeSingle.map((item) => item.value.name);
+    const cubeName = cubeSingle.map((item) => item.value.cube_name)[0];
+    const combinedFilters = [...filters, ...cubeFilters];
+
+    const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
+      .map((item) => {
+        return {
+          member: item.col,
+          operator: item.op,
+          values: Array.isArray(item.val) ? item.val : [ item.val ]
+        }
+      });
+
+    const query = {
+      dimensions,
+      limit: 1,
+      filters: applicableFilters
+    };
+
+    cubejsApi
+      .load(query)
+      .then((result: any) => {
+        setSingleData(result.loadResponse.results[0].data);
+      });
+
+  }, [cubeSingle, cubeFilters, filters]);
+
 
   return (
     <Styles

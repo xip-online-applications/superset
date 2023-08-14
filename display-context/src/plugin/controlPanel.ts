@@ -19,7 +19,6 @@
 import {t, validateNonEmpty} from '@superset-ui/core';
 import {
   ControlPanelConfig,
-  sharedControls,
 } from '@superset-ui/chart-controls';
 import { handlebarsDataTemplateControlSetItem, handlebarsEmptyTemplateControlSetItem } from './controls/handlebarTemplate';
 import { styleControlSetItem } from './controls/style';
@@ -32,16 +31,26 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'all_columns',
+            name: 'cube',
             config: {
-              ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Required Columns in the datafields'),
-              validators: [validateNonEmpty],
-            },
-          },
+              type: 'DndCubeSelect',
+              label: t('Cube Columns'),
+              description: t('Cube Columns to display'),
+              default: [validateNonEmpty],
+            }
+          }
         ],
-        ['adhoc_filters'],
+        [
+          {
+            name: 'cube-filters',
+            config: {
+              type: 'CubeAdHocFilterControl',
+              label: t('Cube Filters'),
+              description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
       ],
     },
     {
@@ -51,20 +60,6 @@ const config: ControlPanelConfig = {
         [handlebarsDataTemplateControlSetItem],
         [handlebarsEmptyTemplateControlSetItem],
         [styleControlSetItem],
-        [
-          {
-            name: 'cube_query',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Cube Query'),
-              renderTrigger: true,
-              default: true,
-              description: t(
-                'Uses the native cube query instead of the regular query'
-              ),
-            },
-          },
-        ],
       ],
     },
   ],

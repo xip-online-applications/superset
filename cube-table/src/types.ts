@@ -26,12 +26,21 @@ export interface CubeTableStylesProps {
   width: number;
 }
 
+//TODO import the proper type from superset-ui
+export type CubeFilterSelectOptionDuplicate = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
 interface CubeTableCustomizeProps {
-  dataset: string;
-  dimensions: Array<string>;
   filters: Array<any>;
   blockingAction: boolean;
   actions: Array<any>;
+  cube: Array<any>;
+  rowLimit: number;
+  cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
 }
 
 export type CubeTableQueryFormData = QueryFormData &
