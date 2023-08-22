@@ -26,14 +26,30 @@ export interface CubeProgressStylesProps {
   width: number;
 }
 
+//TODO import the proper type from superset-ui
+export type CubeFilterSelectOptionDuplicate = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
+export type CubeCrossFilterSelectOptionDuplicate = {
+  cubeLeft: string;
+  colLeft: string;
+  cubeRight: string;
+  colRight: string;
+}
+
 interface CubeProgressCustomizeProps {
-  dataset: string;
-  dimensions: Array<string>;
-  filters: Array<any>;
   progressType: 'line' | 'circle' | 'dashboard';
-  totalColumn: string;
-  totalQuery: string;
-  valueQuery: string;
+
+  layout: 'vertical' | 'horizontal';
+  values: Array<any>;
+  totalValue: Array<any>;
+  cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
+  filters: Array<any>;
+  cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
 }
 
 export type CubeProgressQueryFormData = QueryFormData &
@@ -42,6 +58,5 @@ export type CubeProgressQueryFormData = QueryFormData &
 
 export type CubeProgressProps = CubeProgressStylesProps &
   CubeProgressCustomizeProps & {
-    data: TimeseriesDataRecord[];
     // add typing here for the props you pass in from transformProps.ts!
   };

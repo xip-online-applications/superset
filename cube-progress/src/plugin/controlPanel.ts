@@ -16,15 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {t, validateNonEmpty} from '@superset-ui/core';
+import {t} from '@superset-ui/core';
 import {
   ControlPanelConfig,
-  sharedControls,
 } from '@superset-ui/chart-controls';
-import {
-  cubeTotalQueryControlSetItem,
-  cubeValueQueryControlSetItem
-} from "./controls/cubeQuery";
 
 const config: ControlPanelConfig = {
   controlPanelSections: [
@@ -34,39 +29,57 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'all_columns',
+            name: 'total_value',
             config: {
-              ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Required Columns in the datafields'),
-              validators: [validateNonEmpty],
-            },
-          },
+              type: 'DndCubeSelect',
+              label: t('Total Column'),
+              description: t('The column where the progressbar get its total value from'),
+              default: [],
+              multi: false,
+            }
+          }
         ],
-        ['metric'],
-        ['adhoc_filters'],
+        [
+          {
+            name: 'values',
+            config: {
+              type: 'DndCubeSelect',
+              label: t('Columns'),
+              description: t('The progress columns'),
+              default: [],
+              //TODO: add enum type
+              acceptType: 'cubeMeasure',
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_filters',
+            config: {
+              type: 'CubeAdHocFilterControl',
+              label: t('Cube Filters'),
+              description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_cross_filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Cube Cross Filters'),
+              description: t('Cube Filters that match across cubes'),
+              default: [],
+            }
+          }
+        ],
       ],
     },
     {
-      label: t('Setup display!'),
+      label: t('Display settings'),
       expanded: true,
       controlSetRows: [
-        [cubeTotalQueryControlSetItem],
-        [cubeValueQueryControlSetItem],
-        [
-          {
-            name: 'cube_query',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Cube Query'),
-              renderTrigger: true,
-              default: true,
-              description: t(
-                'Uses the native cube query instead of the regular query'
-              ),
-            },
-          },
-        ],
         [
           {
             name: 'progress_type',
@@ -80,7 +93,23 @@ const config: ControlPanelConfig = {
                 ['dashboard', 'Dashboard'],
               ],
               renderTrigger: true,
-              description: t('The size of your header font'),
+              description: t('The type of progressbar'),
+            },
+          },
+        ],
+        [
+          {
+            name: 'layout',
+            config: {
+              type: 'SelectControl',
+              label: t('Layout'),
+              default: 'vertical',
+              choices: [
+                ['vertical', 'Verticaal'],
+                ['horizontal', 'Horizontaal'],
+              ],
+              renderTrigger: true,
+              description: t('Alightment of the progressbars'),
             },
           },
         ],

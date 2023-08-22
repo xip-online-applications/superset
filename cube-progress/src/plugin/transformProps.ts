@@ -19,26 +19,20 @@
 import { ChartProps } from '@superset-ui/core';
 
 export default function transformProps(chartProps: ChartProps) {
-  const { width, height, formData , datasource} = chartProps;
-  const { extraFormData, allColumns, progressType, metric, cubeTotalQueryControl, cubeValueQueryControl } = formData;
+  const { width, height, formData} = chartProps;
+  const { extraFormData, totalValue, values, cubeFilters, cubeCrossFilters, progressType, layout } = formData;
   const filters = extraFormData.filters || [];
-
-  // @ts-ignore
-  const dataset = datasource.tableName;
-  const totalColumn = metric.column.column_name;
-
-  const dimensions = allColumns;
 
   return {
     width,
     height,
     // and now your control data, manipulated as needed, and passed through as props!
-    dataset,
     filters,
-    dimensions,
     progressType,
-    totalColumn,
-    totalQuery: cubeTotalQueryControl,
-    valueQuery: cubeValueQueryControl,
+    totalValue: totalValue ?? [],
+    values: values ?? [],
+    cubeFilters: cubeFilters ?? [],
+    cubeCrossFilters: cubeCrossFilters ?? [],
+    layout,
   };
 }

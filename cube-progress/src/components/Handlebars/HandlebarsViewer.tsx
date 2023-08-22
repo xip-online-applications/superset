@@ -44,7 +44,6 @@ export const HandlebarsViewer = ({
 
   useMemo(() => {
     try {
-      console.log(data);
       const template = Handlebars.compile(templateSource);
       const result = template(data);
       setRenderedTemplate(result);

@@ -35,12 +35,21 @@ export type CubeFilterSelectOptionDuplicate = {
   val: string;
 }
 
+export type CubeCrossFilterSelectOptionDuplicate = {
+  cubeLeft: string;
+  colLeft: string;
+  cubeRight: string;
+  colRight: string;
+}
+
 interface CubeNativeSupersetCustomizeProps {
   cube: Array<any>;
   cubeSingle: Array<any>;
   rowLimit: number;
   cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
   filters: Array<any>;
+  cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeMeasures: Array<any>;
 }
 
 export type CubeNativeSupersetQueryFormData = QueryFormData &

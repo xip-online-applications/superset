@@ -20,15 +20,23 @@ import { ChartProps } from '@superset-ui/core';
 
 export default function transformProps(chartProps: ChartProps) {
   const { width, height, formData} = chartProps;
-  const { extraFormData, styleTemplate, blockingAction, actionConfig, cube, rowLimit, cubeFilters } = formData;
+  const {
+    extraFormData,
+    styleTemplate,
+    blockingAction,
+    actionConfig,
+    cube,
+    rowLimit,
+    cubeFilters,
+    cubeCrossFilters,
+    tableSize,
+    cubeDetailsCrossFilters,
+    cubeDetails,
+    actionButtons,
+    actionButtonsDetails
+  } = formData;
   const filters = extraFormData.filters || [];
 
-  let actions = [];
-  try {
-    actions = JSON.parse(actionConfig);
-  } catch (e) {
-    console.log('error parsing actions', e);
-  }
 
   return {
     width,
@@ -36,10 +44,15 @@ export default function transformProps(chartProps: ChartProps) {
     // and now your control data, manipulated as needed, and passed through as props!
     filters,
     styleTemplate,
-    actions,
     blockingAction,
     cube,
     rowLimit,
-    cubeFilters
+    cubeFilters,
+    cubeCrossFilters,
+    tableSize,
+    cubeDetailsCrossFilters : cubeDetailsCrossFilters ?? [],
+    cubeDetails : cubeDetails ?? [],
+    actionButtons,
+    actionButtonsDetails
   };
 }

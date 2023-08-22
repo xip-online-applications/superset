@@ -56,11 +56,35 @@ const config: ControlPanelConfig = {
         ],
         [
           {
-            name: 'cube-filters',
+            name: 'cube_measures',
+            config: {
+              type: 'DndCubeSelect',
+              label: t('Cube Measures'),
+              description: t('Cube Measures to display'),
+              default: [],
+              //TODO: add enum type
+              acceptType: 'cubeMeasure',
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_filters',
             config: {
               type: 'CubeAdHocFilterControl',
               label: t('Cube Filters'),
               description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_cross_filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Cube Cross Filters'),
+              description: t('Cube Filters that match across cubes'),
               default: [],
             }
           }

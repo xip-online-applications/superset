@@ -34,13 +34,30 @@ export type CubeFilterSelectOptionDuplicate = {
   val: string;
 }
 
+export type CubeCrossFilterSelectOptionDuplicate = {
+  cubeLeft: string;
+  colLeft: string;
+  cubeRight: string;
+  colRight: string;
+}
+
+export type ActionOption = {
+  actionType: string;
+  actionLabel: string;
+}
+
 interface CubeTableCustomizeProps {
   filters: Array<any>;
   blockingAction: boolean;
-  actions: Array<any>;
   cube: Array<any>;
   rowLimit: number;
   cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
+  cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeDetailsCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeDetails: Array<any>;
+  tableSize: 'large' | 'middle' | 'small';
+  actionButtons: Array<ActionOption>;
+  actionButtonsDetails: Array<ActionOption>;
 }
 
 export type CubeTableQueryFormData = QueryFormData &

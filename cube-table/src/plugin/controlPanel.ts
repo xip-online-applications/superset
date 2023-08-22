@@ -27,7 +27,7 @@ const config: ControlPanelConfig = {
   controlPanelSections: [
     sections.legacyRegularTime,
     {
-      label: t('DATA'),
+      label: t('Data'),
       expanded: true,
       controlSetRows: [
         [
@@ -54,6 +54,28 @@ const config: ControlPanelConfig = {
         ],
         [
           {
+            name: 'cube-cross-filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Cube Cross Filters'),
+              description: t('Cube Filters that match across cubes'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'action_buttons',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons'),
+              description: t('ActtionButtons to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
             name: 'row_limit',
             config: sharedControls.row_limit,
           },
@@ -61,9 +83,87 @@ const config: ControlPanelConfig = {
       ],
     },
     {
-      label: t('Actie knoppen!'),
+      label: t('Details table'),
+      controlSetRows: [
+        [
+          {
+            name: 'cube_details_cross_filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Lookup values'),
+              description: t('Values to match the parent table with the details table'),
+              default: [],
+              multi: false,
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_details',
+            config: {
+              type: 'DndCubeSelect',
+              label: t('Cube Columns'),
+              description: t('Cube Columns to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'row_limit_details',
+            config: sharedControls.row_limit,
+          },
+        ],
+      ],
+    },
+    {
+      label: t('Geaffanceerd'),
+      controlSetRows: [
+        [
+          {
+            name: 'action_buttons',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons'),
+              description: t('ActtionButtons to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'action_buttons_details',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons Details'),
+              description: t('ActtionButtons in Detail table to display'),
+              default: [],
+            }
+          }
+        ],
+      ],
+    },
+    {
+      label: t('Overige instellingen'),
       expanded: true,
       controlSetRows: [
+        [
+          {
+            name: 'table_size',
+            config: {
+              type: 'SelectControl',
+              label: t('Table Size'),
+              default: 'large',
+              choices: [
+                ['large', 'Groot'],
+                ['middle', 'Medium'],
+                ['small', 'Klein'],
+              ],
+              renderTrigger: true,
+              description: t('The size of your header font'),
+            },
+          },
+        ],
         [
           {
             name: 'action_config',

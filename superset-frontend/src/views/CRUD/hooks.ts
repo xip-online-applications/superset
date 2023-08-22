@@ -720,6 +720,51 @@ export function useAvailableDatabases() {
   return [availableDbs, getAvailable] as const;
 }
 
+export function useCubeDatabase() {
+  const [availableDbs, setAvailableDbs] = useState<JsonObject | null>(null);
+
+  const getAvailable = useCallback(() => {
+  setAvailableDbs({
+      "databases": [
+        {
+          "available_drivers": [
+            "cube"
+          ],
+          "default_driver": "cube",
+          "engine": "cube",
+          "engine_information": {
+            "disable_ssh_tunneling": false,
+            "supports_file_upload": false
+          },
+          "name": "Cube",
+          "parameters": {
+            "properties": {
+              "host": {
+                "description": "Cube API URL",
+                "type": "string"
+              },
+              "password": {
+                "description": "Password",
+                "type": "string"
+              },
+            },
+            "required": [
+              "host",
+              "password"
+            ],
+            "type": "object"
+          },
+          "preferred": true,
+          "sqlalchemy_uri_placeholder": "cube.dev/api/v1"
+        }
+      ]
+    }
+  )
+  }, [setAvailableDbs]);
+
+  return [availableDbs, getAvailable] as const;
+}
+
 const transformDB = (db: Partial<DatabaseObject> | null) => {
   if (db && Array.isArray(db?.catalog)) {
     return {

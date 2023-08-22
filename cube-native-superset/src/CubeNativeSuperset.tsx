@@ -18,7 +18,12 @@
  */
 import React, {  createRef, useEffect } from 'react';
 import { styled } from '@superset-ui/core';
-import { CubeNativeSupersetProps, CubeNativeSupersetStylesProps } from './types';
+import {
+  CubeCrossFilterSelectOptionDuplicate,
+  CubeFilterSelectOptionDuplicate,
+  CubeNativeSupersetProps,
+  CubeNativeSupersetStylesProps
+} from './types';
 import cubejs from "@cubejs-client/core";
 
 const Styles = styled.div<CubeNativeSupersetStylesProps>`
@@ -35,11 +40,12 @@ const Styles = styled.div<CubeNativeSupersetStylesProps>`
 `;
 
 export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
-  const { height, width , cube, rowLimit, cubeFilters, cubeSingle, filters} = props;
+  const { height, width , cube, rowLimit, cubeFilters, cubeSingle, filters, cubeCrossFilters, cubeMeasures} = props;
   const rootElem = createRef<HTMLDivElement>();
 
   const [data, setData] = React.useState([]);
   const [singleData, setSingleData] = React.useState([]);
+  const [measureData, setMeasureData] = React.useState([]);
 
   const options = {
     apiToken: 'd60cb603dde98ba3037f2de9eda44938',
@@ -48,10 +54,40 @@ export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
 
   const cubejsApi = cubejs(options.apiToken, options);
 
+  const transformFilters = (nativeFilters: Array<CubeFilterSelectOptionDuplicate>, crossFilters: Array<CubeCrossFilterSelectOptionDuplicate>): Array<CubeFilterSelectOptionDuplicate> => {
+    const filters = [...nativeFilters];
+
+    crossFilters.forEach((item) => {
+      const filterLeft = filters.find((filter) => filter.cube === item.cubeLeft && filter.col === item.colLeft);
+      const filterRight = filters.find((filter) => filter.cube === item.cubeRight && filter.col === item.colRight);
+
+      if (filterLeft) {
+        filters.push({
+          cube: item.cubeRight,
+          col: item.colRight,
+          op: filterLeft.op,
+          val: filterLeft.val
+        });
+      }
+
+      if (filterRight) {
+        filters.push({
+          cube: item.cubeLeft,
+          col: item.colLeft,
+          op: filterRight.op,
+          val: filterRight.val
+        });
+      }
+    });
+
+    return filters;
+  }
+
+
   useEffect(() => {
     const dimensions = cube.map((item) => item.value.name);
     const cubeName = cube.map((item) => item.value.cube_name)[0];
-    const combinedFilters = [...filters, ...cubeFilters];
+    const combinedFilters = transformFilters([...filters, ...cubeFilters], cubeCrossFilters);
 
     const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
       .map((item) => {
@@ -74,12 +110,12 @@ export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
         setData(result.loadResponse.results[0].data);
       });
 
-  }, [cube, cubeFilters, rowLimit, filters]);
+  }, [cube, cubeFilters, rowLimit, filters, cubeCrossFilters]);
 
   useEffect(() => {
     const dimensions = cubeSingle.map((item) => item.value.name);
     const cubeName = cubeSingle.map((item) => item.value.cube_name)[0];
-    const combinedFilters = [...filters, ...cubeFilters];
+    const combinedFilters = transformFilters([...filters, ...cubeFilters], cubeCrossFilters);
 
     const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
       .map((item) => {
@@ -102,7 +138,37 @@ export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
         setSingleData(result.loadResponse.results[0].data);
       });
 
-  }, [cubeSingle, cubeFilters, rowLimit, filters]);
+  }, [cubeSingle, cubeFilters, rowLimit, filters, cubeCrossFilters]);
+
+
+  useEffect(() => {
+    const measures = cubeMeasures.map((item) => item.value.name);
+    const cubeName = cubeMeasures.map((item) => item.value.cube_name)[0];
+    const combinedFilters = transformFilters([...filters, ...cubeFilters], cubeCrossFilters);
+
+    const applicableFilters = combinedFilters.filter((item) => item.cube === cubeName)
+        .map((item) => {
+          return {
+            member: item.col,
+            operator: item.op,
+            values: Array.isArray(item.val) ? item.val : [ item.val ]
+          }
+        });
+
+    const query = {
+      measures,
+      limit: rowLimit,
+      filters: applicableFilters
+    };
+
+    cubejsApi
+        .load(query)
+        .then((result: any) => {
+          setMeasureData(result.loadResponse.results[0].data);
+        });
+
+  }, [cubeMeasures, cubeFilters, rowLimit, filters, cubeCrossFilters]);
+
 
   return (
     <Styles
@@ -125,6 +191,13 @@ export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
         <hr/>
         <br/>
         <span>${JSON.stringify(data, null, 2)}</span>
+      </div>
+      <br/>
+      <div>
+        <span>Measure data example</span>
+        <hr/>
+        <br/>
+        <span>${JSON.stringify(measureData, null, 2)}</span>
       </div>
     </Styles>
   );
