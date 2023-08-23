@@ -29,6 +29,8 @@ import {
 import {ExploreActions} from "../../actions/exploreActions";
 import cubejs, { Meta, Cube } from "@cubejs-client/core";
 import CubePanel from "./CubePanel";
+import {connect, useSelector} from "react-redux";
+import {CubeConfig, UserWithPermissionsAndRoles} from "../../../types/bootstrapTypes";
 
 export interface Props {
   actions: Partial<ExploreActions> & Pick<ExploreActions, 'setControlValue'>;
@@ -72,20 +74,16 @@ const CubeControlPanelContainer = styled.div`
 `;
 
 
-export default function CubeControlPanel({
-                                          formData,
-                                          actions,
-                                          shouldForceUpdate,
-                                        }: Props) {
+function CubeControlPanel(props: CubeConfig) {
   const [cubes, setCubes] = useState([] as Array<Cube>);
 
-  const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
-  };
-  const cubejsApi = cubejs(options.apiToken, options);
-
   useEffect(() => {
+    const options = {
+      apiToken: props.api_token,
+      apiUrl: props.api_url,
+    };
+    const cubejsApi = cubejs(options.apiToken, options);
+
     cubejsApi.meta()
       .then((result: Meta) => {
         setCubes(result.cubes);
@@ -106,3 +104,15 @@ export default function CubeControlPanel({
     })}
   </CubeControlPanelContainer>)
 }
+
+function mapStateToProps(state: any) {
+  const { common } = state;
+  return {
+    ...common.cube_config
+  };
+}
+
+export default connect(
+    mapStateToProps,
+    undefined,
+)(CubeControlPanel);

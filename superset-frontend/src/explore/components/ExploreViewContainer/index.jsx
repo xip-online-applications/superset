@@ -602,11 +602,7 @@ function ExploreViewContainer(props) {
               />
             </span>
           </div>
-          <CubeControlPanel
-            formData={props.form_data}
-            actions={props.actions}
-            shouldForceUpdate={shouldForceUpdate}
-          ></CubeControlPanel>
+          <CubeControlPanel />
         </Resizable>
         {isCollapsed ? (
           <div
