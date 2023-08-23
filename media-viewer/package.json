@@ -27,7 +27,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@cubejs-client/core": "^0.33.44"
+    "@cubejs-client/core": "^0.33.47"
   },
   "peerDependencies": {
     "@airbnb/config-babel": "^2.0.1",
