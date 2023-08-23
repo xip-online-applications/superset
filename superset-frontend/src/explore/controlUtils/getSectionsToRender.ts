@@ -61,12 +61,7 @@ const getMemoizedSectionsToRender = memoizeOne(
           ...section,
           controlSetRows:
             controlSetRows?.map(row =>
-              row
-                .filter(
-                  control =>
-                    typeof control !== 'string'
-                )
-                .map(item => expandControlConfig(item, controlOverrides)),
+              row.map(item => expandControlConfig(item, controlOverrides)),
             ) || [],
         };
       });
@@ -80,7 +75,5 @@ export function getSectionsToRender(vizType: string) {
   const controlPanelConfig =
     (getChartControlPanelRegistry().get(vizType) as ControlPanelConfig) || {};
 
-  const sectionsToRender = getMemoizedSectionsToRender(controlPanelConfig);
-
-  return sectionsToRender;
+  return getMemoizedSectionsToRender(controlPanelConfig);
 }

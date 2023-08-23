@@ -159,69 +159,69 @@ const ExplorePanelContainer = styled.div`
   `};
 `;
 
-const updateHistory = debounce(
-  async (
-    formData,
-    isReplace,
-    standalone,
-    force,
-    title,
-    tabId,
-  ) => {
-    const payload = { ...formData };
-    const chartId = formData.slice_id;
-    const params = new URLSearchParams(window.location.search);
-    const additionalParam = Object.fromEntries(params);
-
-    if (chartId) {
-      additionalParam[URL_PARAMS.sliceId.name] = chartId;
-    }
-
-    const urlParams = payload?.url_params || {};
-    Object.entries(urlParams).forEach(([key, value]) => {
-      if (!RESERVED_CHART_URL_PARAMS.includes(key)) {
-        additionalParam[key] = value;
-      }
-    });
-
-    try {
-      let key;
-      let stateModifier;
-      if (isReplace) {
-        key = await postFormData(
-          formData,
-          chartId,
-          tabId,
-        );
-        stateModifier = 'replaceState';
-      } else {
-        key = getUrlParam(URL_PARAMS.formDataKey);
-        await putFormData(
-          key,
-          formData,
-          chartId,
-          tabId,
-        );
-        stateModifier = 'pushState';
-      }
-      // avoid race condition in case user changes route before explore updates the url
-      if (window.location.pathname.startsWith('/explore')) {
-        const url = mountExploreUrl(
-          standalone ? URL_PARAMS.standalone.name : null,
-          {
-            [URL_PARAMS.formDataKey.name]: key,
-            ...additionalParam,
-          },
-          force,
-        );
-        window.history[stateModifier](payload, title, url);
-      }
-    } catch (e) {
-      logging.warn('Failed at altering browser history', e);
-    }
-  },
-  1000,
-);
+// const updateHistory = debounce(
+//   async (
+//     formData,
+//     isReplace,
+//     standalone,
+//     force,
+//     title,
+//     tabId,
+//   ) => {
+//     const payload = { ...formData };
+//     const chartId = formData.slice_id;
+//     const params = new URLSearchParams(window.location.search);
+//     const additionalParam = Object.fromEntries(params);
+//
+//     if (chartId) {
+//       additionalParam[URL_PARAMS.sliceId.name] = chartId;
+//     }
+//
+//     const urlParams = payload?.url_params || {};
+//     Object.entries(urlParams).forEach(([key, value]) => {
+//       if (!RESERVED_CHART_URL_PARAMS.includes(key)) {
+//         additionalParam[key] = value;
+//       }
+//     });
+//
+//     try {
+//       let key;
+//       let stateModifier;
+//       if (isReplace) {
+//         key = await postFormData(
+//           formData,
+//           chartId,
+//           tabId,
+//         );
+//         stateModifier = 'replaceState';
+//       } else {
+//         key = getUrlParam(URL_PARAMS.formDataKey);
+//         await putFormData(
+//           key,
+//           formData,
+//           chartId,
+//           tabId,
+//         );
+//         stateModifier = 'pushState';
+//       }
+//       // avoid race condition in case user changes route before explore updates the url
+//       if (window.location.pathname.startsWith('/explore')) {
+//         const url = mountExploreUrl(
+//           standalone ? URL_PARAMS.standalone.name : null,
+//           {
+//             [URL_PARAMS.formDataKey.name]: key,
+//             ...additionalParam,
+//           },
+//           force,
+//         );
+//         window.history[stateModifier](payload, title, url);
+//       }
+//     } catch (e) {
+//       logging.warn('Failed at altering browser history', e);
+//     }
+//   },
+//   1000,
+// );
 
 function ExploreViewContainer(props) {
   const dynamicPluginContext = usePluginContext();
@@ -247,32 +247,32 @@ function ExploreViewContainer(props) {
     datasource_width: 300,
   };
 
-  const addHistory = useCallback(
-    async ({ isReplace = false, title } = {}) => {
-      const formData = props.dashboardId
-        ? {
-            ...props.form_data,
-            dashboardId: props.dashboardId,
-          }
-        : props.form_data;
-
-      updateHistory(
-        formData,
-        isReplace,
-        props.standalone,
-        props.force,
-        title,
-        tabId,
-      );
-    },
-    [
-      props.dashboardId,
-      props.form_data,
-      props.standalone,
-      props.force,
-      tabId,
-    ],
-  );
+  // const addHistory = useCallback(
+  //   async ({ isReplace = false, title } = {}) => {
+  //     const formData = props.dashboardId
+  //       ? {
+  //           ...props.form_data,
+  //           dashboardId: props.dashboardId,
+  //         }
+  //       : props.form_data;
+  //
+  //     updateHistory(
+  //       formData,
+  //       isReplace,
+  //       props.standalone,
+  //       props.force,
+  //       title,
+  //       tabId,
+  //     );
+  //   },
+  //   [
+  //     props.dashboardId,
+  //     props.form_data,
+  //     props.standalone,
+  //     props.force,
+  //     tabId,
+  //   ],
+  // );
 
   const handlePopstate = useCallback(() => {
     const formData = window.history.state;
@@ -290,7 +290,7 @@ function ExploreViewContainer(props) {
   const onQuery = useCallback(() => {
     props.actions.setForceQuery(false);
     props.actions.triggerQuery(true, props.chart.id);
-    addHistory();
+    // addHistory();
     setLastQueriedControls(props.controls);
   }, [props.controls, props.actions, props.chart.id]);
 
@@ -336,11 +336,11 @@ function ExploreViewContainer(props) {
     props.actions.logEvent(LOG_ACTIONS_MOUNT_EXPLORER);
   });
 
-  useChangeEffect(tabId, (previous, current) => {
-    if (current) {
-      addHistory({ isReplace: true });
-    }
-  });
+  // useChangeEffect(tabId, (previous, current) => {
+  //   if (current) {
+  //     addHistory({ isReplace: true });
+  //   }
+  // });
 
   const previousHandlePopstate = usePrevious(handlePopstate);
   useEffect(() => {
@@ -391,10 +391,10 @@ function ExploreViewContainer(props) {
         : getFormDataFromControls(props.controls);
       props.actions.updateQueryFormData(newQueryFormData, props.chart.id);
       props.actions.renderTriggered(new Date().getTime(), props.chart.id);
-      addHistory();
+      // addHistory();
     },
     [
-      addHistory,
+      // addHistory,
       props.actions,
       props.chart.id,
       props.chart.latestQueryFormData,
@@ -451,7 +451,7 @@ function ExploreViewContainer(props) {
   useChangeEffect(props.saveAction, () => {
     if (['saveas', 'overwrite'].includes(props.saveAction)) {
       onQuery();
-      addHistory({ isReplace: true });
+      // addHistory({ isReplace: true });
       props.actions.setSaveAction(null);
     }
   });
@@ -504,6 +504,8 @@ function ExploreViewContainer(props) {
   }, [props.controls]);
 
   function renderChartContainer() {
+    console.log('props', props);
+
     return (
       <ExploreChartPanel
         {...props}
