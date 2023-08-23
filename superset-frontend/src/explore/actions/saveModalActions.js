@@ -102,25 +102,12 @@ export const getSlicePayload = (
     dashboards,
   };
 
-  const [datasourceId, datasourceType] = formData.datasource.split('__');
   const payload = {
     params: JSON.stringify(formData),
     slice_name: sliceName,
     viz_type: formData.viz_type,
-    datasource_id: parseInt(datasourceId, 10),
-    datasource_type: datasourceType,
     dashboards,
     owners,
-    query_context: JSON.stringify(
-      buildV1ChartDataPayload({
-        formData,
-        force: false,
-        resultFormat: 'json',
-        resultType: 'full',
-        setDataMask: null,
-        ownState: null,
-      }),
-    ),
   };
   return payload;
 };

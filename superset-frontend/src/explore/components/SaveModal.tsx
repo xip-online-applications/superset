@@ -19,15 +19,12 @@
 /* eslint camelcase: 0 */
 import React from 'react';
 import { Dispatch } from 'redux';
-import { isFeatureEnabled } from 'src/featureFlags';
 import rison from 'rison';
 import { connect } from 'react-redux';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { InfoTooltipWithTrigger } from '@superset-ui/chart-controls';
 import {
   css,
   DatasourceType,
-  FeatureFlag,
   isDefined,
   styled,
   SupersetClient,
@@ -141,11 +138,6 @@ class SaveModal extends React.Component<SaveModalProps, SaveModalState> {
     }
   }
 
-  handleDatasetNameChange = (e: React.FormEvent<HTMLInputElement>) => {
-    // @ts-expect-error
-    this.setState({ datasetName: e.target.value });
-  };
-
   onSliceNameChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ newSliceName: event.target.value });
   }
@@ -174,19 +166,6 @@ class SaveModal extends React.Component<SaveModalProps, SaveModalState> {
     };
 
     try {
-      if (this.props.datasource?.type === DatasourceType.Query) {
-        const { schema, sql, database } = this.props.datasource;
-        const { templateParams } = this.props.datasource;
-
-        await this.props.actions.saveDataset({
-          schema,
-          sql,
-          database,
-          templateParams,
-          datasourceName: this.state.datasetName,
-        });
-      }
-
       //  Get chart dashboards
       let sliceDashboards: number[] = [];
       if (this.props.slice && this.state.action === 'overwrite') {
@@ -363,48 +342,27 @@ class SaveModal extends React.Component<SaveModalProps, SaveModalState> {
           data-test="new-chart-name"
         />
       </FormItem>
-      {this.props.datasource?.type === 'query' && (
-        <FormItem label={t('Dataset Name')} required>
-          <InfoTooltipWithTrigger
-            tooltip={t('A reusable dataset will be saved with your chart.')}
-            placement="right"
-          />
-          <Input
-            name="dataset_name"
-            type="text"
-            placeholder="Dataset Name"
-            value={this.state.datasetName}
-            onChange={this.handleDatasetNameChange}
-            data-test="new-dataset-name"
-          />
-        </FormItem>
-      )}
-      {!(
-        isFeatureEnabled(FeatureFlag.DASHBOARD_NATIVE_FILTERS) &&
-        this.state.vizType === 'filter_box'
-      ) && (
-        <FormItem
-          label={t('Add to dashboard')}
-          data-test="save-chart-modal-select-dashboard-form"
-        >
-          <AsyncSelect
-            allowClear
-            allowNewOptions
-            ariaLabel={t('Select a dashboard')}
-            options={this.loadDashboards}
-            onChange={this.onDashboardChange}
-            value={this.state.dashboard}
-            placeholder={
-              <div>
-                <b>{t('Select')}</b>
-                {t(' a dashboard OR ')}
-                <b>{t('create')}</b>
-                {t(' a new one')}
-              </div>
-            }
-          />
-        </FormItem>
-      )}
+      <FormItem
+        label={t('Add to dashboard')}
+        data-test="save-chart-modal-select-dashboard-form"
+      >
+        <AsyncSelect
+          allowClear
+          allowNewOptions
+          ariaLabel={t('Select a dashboard')}
+          options={this.loadDashboards}
+          onChange={this.onDashboardChange}
+          value={this.state.dashboard}
+          placeholder={
+            <div>
+              <b>{t('Select')}</b>
+              {t(' a dashboard OR ')}
+              <b>{t('create')}</b>
+              {t(' a new one')}
+            </div>
+          }
+        />
+      </FormItem>
     </Form>
   );
 
@@ -418,11 +376,7 @@ class SaveModal extends React.Component<SaveModalProps, SaveModalState> {
         buttonSize="small"
         disabled={
           !this.state.newSliceName ||
-          !this.state.dashboard ||
-          (this.props.datasource?.type !== DatasourceType.Table &&
-            !this.state.datasetName) ||
-          (isFeatureEnabled(FeatureFlag.DASHBOARD_NATIVE_FILTERS) &&
-            this.state.vizType === 'filter_box')
+          !this.state.dashboard
         }
         onClick={() => this.saveOrOverwrite(true)}
       >
@@ -437,9 +391,7 @@ class SaveModal extends React.Component<SaveModalProps, SaveModalState> {
         onClick={() => this.saveOrOverwrite(false)}
         disabled={
           this.state.isLoading ||
-          !this.state.newSliceName ||
-          (this.props.datasource?.type !== DatasourceType.Table &&
-            !this.state.datasetName)
+          !this.state.newSliceName
         }
         data-test="btn-modal-save"
       >
