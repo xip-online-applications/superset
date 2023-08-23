@@ -504,8 +504,6 @@ function ExploreViewContainer(props) {
   }, [props.controls]);
 
   function renderChartContainer() {
-    console.log('props', props);
-
     return (
       <ExploreChartPanel
         {...props}

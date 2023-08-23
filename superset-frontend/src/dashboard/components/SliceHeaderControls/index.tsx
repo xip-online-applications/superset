@@ -116,14 +116,9 @@ export interface SliceHeaderControlsProps {
   formData: QueryFormData;
   exploreUrl: string;
 
-  forceRefresh: (sliceId: number, dashboardId: number) => void;
   logExploreChart?: (sliceId: number) => void;
   logEvent?: (eventName: string, eventData?: object) => void;
   toggleExpandSlice?: (sliceId: number) => void;
-  exportCSV?: (sliceId: number) => void;
-  exportFullCSV?: (sliceId: number) => void;
-  exportXLSX?: (sliceId: number) => void;
-  exportFullXLSX?: (sliceId: number) => void;
   handleToggleFullSize: () => void;
 
   addDangerToast: (message: string) => void;
@@ -159,12 +154,6 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
       .get(props.slice.viz_type)
       ?.behaviors?.includes(Behavior.INTERACTIVE_CHART);
 
-  const refreshChart = () => {
-    if (props.updatedDttm) {
-      props.forceRefresh(props.slice.slice_id, props.dashboardId);
-    }
-  };
-
   const handleMenuClick = ({
     key,
     domEvent,
@@ -173,10 +162,6 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
     domEvent: MouseEvent<HTMLElement>;
   }) => {
     switch (key) {
-      case MENU_KEYS.FORCE_REFRESH:
-        refreshChart();
-        props.addSuccessToast(t('Data refreshed'));
-        break;
       case MENU_KEYS.TOGGLE_CHART_DESCRIPTION:
         // eslint-disable-next-line no-unused-expressions
         props.toggleExpandSlice?.(props.slice.slice_id);
@@ -185,24 +170,8 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
         // eslint-disable-next-line no-unused-expressions
         props.logExploreChart?.(props.slice.slice_id);
         break;
-      case MENU_KEYS.EXPORT_CSV:
-        // eslint-disable-next-line no-unused-expressions
-        props.exportCSV?.(props.slice.slice_id);
-        break;
       case MENU_KEYS.FULLSCREEN:
         props.handleToggleFullSize();
-        break;
-      case MENU_KEYS.EXPORT_FULL_CSV:
-        // eslint-disable-next-line no-unused-expressions
-        props.exportFullCSV?.(props.slice.slice_id);
-        break;
-      case MENU_KEYS.EXPORT_FULL_XLSX:
-        // eslint-disable-next-line no-unused-expressions
-        props.exportFullXLSX?.(props.slice.slice_id);
-        break;
-      case MENU_KEYS.EXPORT_XLSX:
-        // eslint-disable-next-line no-unused-expressions
-        props.exportXLSX?.(props.slice.slice_id);
         break;
       case MENU_KEYS.DOWNLOAD_AS_IMAGE: {
         // menu closes with a delay, we need to hide it manually,

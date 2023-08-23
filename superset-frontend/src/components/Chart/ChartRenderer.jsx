@@ -339,6 +339,7 @@ class ChartRenderer extends React.Component {
             this.state.showContextMenu ? this.onContextMenuFallback : undefined
           }
         >
+          {/*RENE*/}
           <SuperChart
             disableErrorBoundary
             key={`${chartId}${webpackHash}`}

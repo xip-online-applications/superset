@@ -263,7 +263,6 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
 
 
   const { form_data } = props;
-  const { x_axis } = form_data;
 
   useEffect(() => {
     let shouldUpdateControls = false;
@@ -317,11 +316,7 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
     customizeSections,
   } = useMemo(
     () =>
-      getState(
-        form_data.viz_type,
-        // props.exploreState.datasource,
-        // props.datasource_type,
-      ),
+      getState(form_data.viz_type),
     [form_data.viz_type],
   );
 

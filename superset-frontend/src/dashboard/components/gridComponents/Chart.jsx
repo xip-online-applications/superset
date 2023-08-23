@@ -137,11 +137,6 @@ class Chart extends React.Component {
     this.changeFilter = this.changeFilter.bind(this);
     this.handleFilterMenuOpen = this.handleFilterMenuOpen.bind(this);
     this.handleFilterMenuClose = this.handleFilterMenuClose.bind(this);
-    this.exportCSV = this.exportCSV.bind(this);
-    this.exportFullCSV = this.exportFullCSV.bind(this);
-    this.exportXLSX = this.exportXLSX.bind(this);
-    this.exportFullXLSX = this.exportFullXLSX.bind(this);
-    this.forceRefresh = this.forceRefresh.bind(this);
     this.resize = this.resize.bind(this);
     this.setDescriptionRef = this.setDescriptionRef.bind(this);
     this.setHeaderRef = this.setHeaderRef.bind(this);
@@ -296,84 +291,6 @@ class Chart extends React.Component {
     });
   };
 
-  onExploreChart = async clickEvent => {
-    const isOpenInNewTab =
-      clickEvent.shiftKey || clickEvent.ctrlKey || clickEvent.metaKey;
-    try {
-      const lastTabId = window.localStorage.getItem('last_tab_id');
-      const nextTabId = lastTabId
-        ? String(Number.parseInt(lastTabId, 10) + 1)
-        : undefined;
-      const key = await postFormData(
-        this.props.datasource.id,
-        this.props.datasource.type,
-        this.props.formData,
-        this.props.slice.slice_id,
-        nextTabId,
-      );
-      const url = mountExploreUrl(null, {
-        [URL_PARAMS.formDataKey.name]: key,
-        [URL_PARAMS.sliceId.name]: this.props.slice.slice_id,
-      });
-      if (isOpenInNewTab) {
-        window.open(url, '_blank', 'noreferrer');
-      } else {
-        this.props.history.push(url);
-      }
-    } catch (error) {
-      logging.error(error);
-      this.props.addDangerToast(t('An error occurred while opening Explore'));
-    }
-  };
-
-  exportFullCSV() {
-    this.exportCSV(true);
-  }
-
-  exportCSV(isFullCSV = false) {
-    this.exportTable('csv', isFullCSV);
-  }
-
-  exportXLSX() {
-    this.exportTable('xlsx', false);
-  }
-
-  exportFullXLSX() {
-    this.exportTable('xlsx', true);
-  }
-
-  exportTable(format, isFullCSV) {
-    const logAction =
-      format === 'csv'
-        ? LOG_ACTIONS_EXPORT_CSV_DASHBOARD_CHART
-        : LOG_ACTIONS_EXPORT_XLSX_DASHBOARD_CHART;
-    this.props.logEvent(logAction, {
-      slice_id: this.props.slice.slice_id,
-      is_cached: this.props.isCached,
-    });
-    exportChart({
-      formData: isFullCSV
-        ? { ...this.props.formData, row_limit: this.props.maxRows }
-        : this.props.formData,
-      resultType: 'full',
-      resultFormat: format,
-      force: true,
-      ownState: this.props.ownState,
-    });
-  }
-
-  forceRefresh() {
-    this.props.logEvent(LOG_ACTIONS_FORCE_REFRESH_CHART, {
-      slice_id: this.props.slice.slice_id,
-      is_cached: this.props.isCached,
-    });
-    return this.props.refreshChart(
-      this.props.chart.id,
-      true,
-      this.props.dashboardId,
-    );
-  }
-
   render() {
     const {
       id,
@@ -416,6 +333,8 @@ class Chart extends React.Component {
       return <MissingChart height={this.getChartHeight()} />;
     }
 
+    console.log(chart);
+
     const { queriesResponse, chartUpdateEndTime, chartStatus } = chart;
     const isLoading = chartStatus === 'loading';
     // eslint-disable-next-line camelcase
@@ -447,16 +366,10 @@ class Chart extends React.Component {
           cachedDttm={cachedDttm}
           updatedDttm={chartUpdateEndTime}
           toggleExpandSlice={toggleExpandSlice}
-          forceRefresh={this.forceRefresh}
           editMode={editMode}
           annotationQuery={chart.annotationQuery}
           logExploreChart={this.logExploreChart}
           logEvent={logEvent}
-          onExploreChart={this.onExploreChart}
-          exportCSV={this.exportCSV}
-          exportXLSX={this.exportXLSX}
-          exportFullCSV={this.exportFullCSV}
-          exportFullXLSX={this.exportFullXLSX}
           updateSliceName={updateSliceName}
           sliceName={sliceName}
           supersetCanExplore={supersetCanExplore}

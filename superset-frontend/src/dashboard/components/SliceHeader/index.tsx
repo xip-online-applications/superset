@@ -129,13 +129,10 @@ const ChartHeaderStyles = styled.div`
 
 const SliceHeader: FC<SliceHeaderProps> = ({
   innerRef = null,
-  forceRefresh = () => ({}),
   updateSliceName = () => ({}),
   toggleExpandSlice = () => ({}),
   logExploreChart = () => ({}),
   logEvent,
-  exportCSV = () => ({}),
-  exportXLSX = () => ({}),
   editMode = false,
   annotationQuery = {},
   annotationError = {},
@@ -147,8 +144,6 @@ const SliceHeader: FC<SliceHeaderProps> = ({
   supersetCanExplore = false,
   supersetCanShare = false,
   supersetCanCSV = false,
-  exportFullCSV,
-  exportFullXLSX,
   slice,
   componentId,
   dashboardId,
@@ -260,13 +255,8 @@ const SliceHeader: FC<SliceHeaderProps> = ({
                 cachedDttm={cachedDttm}
                 updatedDttm={updatedDttm}
                 toggleExpandSlice={toggleExpandSlice}
-                forceRefresh={forceRefresh}
                 logExploreChart={logExploreChart}
                 logEvent={logEvent}
-                exportCSV={exportCSV}
-                exportFullCSV={exportFullCSV}
-                exportXLSX={exportXLSX}
-                exportFullXLSX={exportFullXLSX}
                 supersetCanExplore={supersetCanExplore}
                 supersetCanShare={supersetCanShare}
                 supersetCanCSV={supersetCanCSV}
