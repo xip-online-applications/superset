@@ -18,15 +18,11 @@
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import Split from 'react-split';
 import {
   css,
-  DatasourceType,
   ensureIsArray,
   FeatureFlag,
-  getChartMetadataRegistry,
   styled,
-  SupersetClient,
   t,
   useTheme,
 } from '@superset-ui/core';
@@ -38,12 +34,7 @@ import {
   setItem,
   LocalStorageKeys,
 } from 'src/utils/localStorageHelpers';
-import Alert from 'src/components/Alert';
-import { SaveDatasetModal } from 'src/SqlLab/components/SaveDatasetModal';
-import { getDatasourceAsSaveableDataset } from 'src/utils/datasourceUtils';
-import { buildV1ChartDataPayload } from 'src/explore/exploreUtils';
 import { getChartRequiredFieldsMissingMessage } from 'src/utils/getChartRequiredFieldsMissingMessage';
-import { DataTablesPane } from '../DataTablesPane';
 import { ChartPills } from '../ChartPills';
 import { ExploreAlert } from '../ExploreAlert';
 import useResizeDetectorByObserver from './useResizeDetectorByObserver';
@@ -338,13 +329,6 @@ const ExploreChartPanel = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chart.latestQueryFormData]);
 
-  const elementStyle = useCallback(
-    (dimension, elementSize, gutterSize) => ({
-      [dimension]: `calc(${elementSize}% - ${gutterSize + gutterMargin}px)`,
-    }),
-    [gutterMargin],
-  );
-
   if (standalone) {
     // dom manipulation hack to get rid of the bootstrap theme's body background
     const standaloneClass = 'background-transparent';
@@ -364,26 +348,7 @@ const ExploreChartPanel = ({
       className="panel panel-default chart-container"
       showSplite={showSplite}
     >
-      <Split
-        sizes={splitSizes}
-        minSize={MIN_SIZES}
-        direction="vertical"
-        gutterSize={gutterHeight}
-        onDragEnd={onDragEnd}
-        elementStyle={elementStyle}
-        expandToMin
-      >
-        {panelBody}
-        <DataTablesPane
-          ownState={ownState}
-          queryFormData={queryFormData}
-          queryForce={force}
-          onCollapseChange={onCollapseChange}
-          chartStatus={chart.chartStatus}
-          errorMessage={errorMessage}
-          actions={actions}
-        />
-      </Split>
+      {panelBody}
     </Styles>
   );
 };
