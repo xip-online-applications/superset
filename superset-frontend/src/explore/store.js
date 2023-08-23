@@ -43,22 +43,13 @@ export function getControlsState(state, inputFormData) {
   const formData = { ...inputFormData };
   const vizType =
     formData.viz_type || state.common?.conf.DEFAULT_VIZ_TYPE || 'table';
-
-  console.log('vizType', vizType);
-  console.log('state', state);
-  console.log('inputFormData', inputFormData);
-
-  // RENE
   
   // handleDeprecatedControls(formData);
   const controlsState = getAllControlsState(
     vizType,
-    // state.datasource.type,
     state,
     formData,
   );
-
-  console.log('controlsState', controlsState);
 
   const controlPanelConfig = getChartControlPanelRegistry().get(vizType) || {};
   if (controlPanelConfig.onInit) {
@@ -73,7 +64,6 @@ export function applyDefaultFormData(inputFormData) {
   const vizType = inputFormData.viz_type;
   const controlsState = getAllControlsState(
     vizType,
-    // datasourceType,
     null,
     inputFormData,
   );
