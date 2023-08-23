@@ -73,13 +73,6 @@ class UpdateChartCommand(UpdateMixin, BaseCommand):
         dashboard_ids = self._properties.get("dashboards")
         owner_ids: Optional[list[int]] = self._properties.get("owners")
 
-        # Validate if datasource_id is provided datasource_type is required
-        datasource_id = self._properties.get("datasource_id")
-        if datasource_id is not None:
-            datasource_type = self._properties.get("datasource_type", "")
-            if not datasource_type:
-                exceptions.append(DatasourceTypeUpdateRequiredValidationError())
-
         # Validate/populate model exists
         self._model = ChartDAO.find_by_id(self._model_id)
         if not self._model:
@@ -94,14 +87,6 @@ class UpdateChartCommand(UpdateMixin, BaseCommand):
                 self._properties["owners"] = owners
             except SupersetSecurityException as ex:
                 raise ChartForbiddenError() from ex
-            except ValidationError as ex:
-                exceptions.append(ex)
-
-        # Validate/Populate datasource
-        if datasource_id is not None:
-            try:
-                datasource = get_datasource_by_id(datasource_id, datasource_type)
-                self._properties["datasource_name"] = datasource.name
             except ValidationError as ex:
                 exceptions.append(ex)
 

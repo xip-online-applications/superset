@@ -197,7 +197,7 @@ class DatasetRestApi(BaseSupersetModelRestApi):
         "columns.advanced_data_type",
         "is_managed_externally",
         "uid",
-        "datasource_name",
+        # "datasource_name",
         "name",
         "column_formats",
         "currency_formats",

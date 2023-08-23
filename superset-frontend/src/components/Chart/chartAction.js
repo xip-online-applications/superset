@@ -154,54 +154,6 @@ const legacyChartDataRequest = async (
   );
 };
 
-const v1ChartDataRequest = async (
-  formData,
-  resultFormat,
-  resultType,
-  force,
-  requestParams,
-  setDataMask,
-  ownState,
-  parseMethod,
-) => {
-  const payload = buildV1ChartDataPayload({
-    formData,
-    resultType,
-    resultFormat,
-    force,
-    setDataMask,
-    ownState,
-  });
-
-  // The dashboard id is added to query params for tracking purposes
-  const { slice_id: sliceId } = formData;
-  const { dashboard_id: dashboardId } = requestParams;
-
-  const qs = {};
-  if (sliceId !== undefined) qs.form_data = `{"slice_id":${sliceId}}`;
-  if (dashboardId !== undefined) qs.dashboard_id = dashboardId;
-  if (force !== false) qs.force = force;
-
-  const allowDomainSharding =
-    // eslint-disable-next-line camelcase
-    domainShardingEnabled && requestParams?.dashboard_id;
-  const url = getChartDataUri({
-    path: '/api/v1/chart/data',
-    qs,
-    allowDomainSharding,
-  }).toString();
-
-  const querySettings = {
-    ...requestParams,
-    url,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    parseMethod,
-  };
-
-  return SupersetClient.post(querySettings);
-};
-
 export async function getChartDataRequest({
   formData,
   setDataMask = () => {},
@@ -212,62 +164,10 @@ export async function getChartDataRequest({
   requestParams = {},
   ownState = {},
 }) {
-  let querySettings = {
-    ...requestParams,
-  };
+  console.log('USE CUBE');
 
-  if (domainShardingEnabled) {
-    querySettings = {
-      ...querySettings,
-      mode: 'cors',
-      credentials: 'include',
-    };
-  }
-
-  if (formData.cube != undefined || formData.cube_query != undefined) {
-    console.log('USE CUBE');
-
-    const result = JSON.parse('{"result":[{"cache_key":"03574e203a9ba5e4235940331d5423be","cached_dttm":"2023-07-18T07:05:41","cache_timeout":300,"applied_template_filters":[],"annotation_data":{},"error":null,"is_cached":true,"query":"SELECT name AS name\\nFROM public.users_channels\\nGROUP BY name\\nLIMIT 50000;\\n\\n","status":"success","stacktrace":null,"rowcount":30,"from_dttm":null,"to_dttm":1689638400000,"label_map":{"name":["name"]},"colnames":["name"],"indexnames":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],"coltypes":[1],"data":[{"name":"newsletter"},{"name":"dashboard-level-access"},{"name":"support"},{"name":"beginners"},{"name":"visualization_plugins"},{"name":"community-feedback"},{"name":"graduation"},{"name":"product_feedback"},{"name":"superset_stage_alerts"},{"name":"dashboard-filters"},{"name":"contributing"},{"name":"superset-champions"},{"name":"introductions"},{"name":"embedd-dashboards"},{"name":"github-notifications"},{"name":"cypress-tests"},{"name":"helm-k8-deployment"},{"name":"superset_prod_reports"},{"name":"globalnav_search"},{"name":"pull-requests"},{"name":"design"},{"name":"feature-requests"},{"name":"dashboards"},{"name":"localization"},{"name":"commits"},{"name":"apache-releases"},{"name":"jobs"},{"name":"developers"},{"name":"general"},{"name":"announcements"}],"result_format":"json","applied_filters":[],"rejected_filters":[]}]}');
-    return Promise.resolve({json: result});
-  }
-
-  if (formData?.extra_form_data?.filters != undefined && formData.extra_form_data.filters.length !== 0) {
-
-    const filtersWithoutDataset = [];
-
-    formData.extra_form_data.filters.forEach((filter) => {
-      filtersWithoutDataset.push({
-            col: filter.col,
-            op: filter.op,
-            val: filter.val,
-          });
-    });
-
-    formData.extra_form_data.filters = filtersWithoutDataset;
-  }
-
-  const [useLegacyApi, parseMethod] = getQuerySettings(formData);
-  if (useLegacyApi) {
-    return legacyChartDataRequest(
-      formData,
-      resultFormat,
-      resultType,
-      force,
-      method,
-      querySettings,
-      parseMethod,
-    );
-  }
-  return v1ChartDataRequest(
-    formData,
-    resultFormat,
-    resultType,
-    force,
-    querySettings,
-    setDataMask,
-    ownState,
-    parseMethod,
-  );
+  const result = JSON.parse('{"result":[{"cache_key":"03574e203a9ba5e4235940331d5423be","cached_dttm":"2023-07-18T07:05:41","cache_timeout":300,"applied_template_filters":[],"annotation_data":{},"error":null,"is_cached":true,"query":"SELECT name AS name\\nFROM public.users_channels\\nGROUP BY name\\nLIMIT 50000;\\n\\n","status":"success","stacktrace":null,"rowcount":30,"from_dttm":null,"to_dttm":1689638400000,"label_map":{"name":["name"]},"colnames":["name"],"indexnames":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],"coltypes":[1],"data":[{"name":"newsletter"},{"name":"dashboard-level-access"},{"name":"support"},{"name":"beginners"},{"name":"visualization_plugins"},{"name":"community-feedback"},{"name":"graduation"},{"name":"product_feedback"},{"name":"superset_stage_alerts"},{"name":"dashboard-filters"},{"name":"contributing"},{"name":"superset-champions"},{"name":"introductions"},{"name":"embedd-dashboards"},{"name":"github-notifications"},{"name":"cypress-tests"},{"name":"helm-k8-deployment"},{"name":"superset_prod_reports"},{"name":"globalnav_search"},{"name":"pull-requests"},{"name":"design"},{"name":"feature-requests"},{"name":"dashboards"},{"name":"localization"},{"name":"commits"},{"name":"apache-releases"},{"name":"jobs"},{"name":"developers"},{"name":"general"},{"name":"announcements"}],"result_format":"json","applied_filters":[],"rejected_filters":[]}]}');
+  return Promise.resolve({json: result});
 }
 
 export function runAnnotationQuery({

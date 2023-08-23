@@ -29,9 +29,8 @@ import {
 } from '@superset-ui/core';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { URL_PARAMS } from 'src/constants';
-import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import Button from 'src/components/Button';
-import { AsyncSelect, Steps } from 'src/components';
 import { Tooltip } from 'src/components/Tooltip';
 import withToasts from 'src/components/MessageToasts/withToasts';
 import { isFeatureEnabled } from 'src/featureFlags';
@@ -206,17 +205,6 @@ const StyledLabel = styled.span`
   `}
 `;
 
-const StyledStepTitle = styled.span`
-  ${({
-    theme: {
-      typography: { sizes, weights },
-    },
-  }) => `
-      font-size: ${sizes.m}px;
-      font-weight: ${weights.bold};
-    `}
-`;
-
 const StyledStepDescription = styled.div`
   ${({ theme: { gridUnit } }) => `
     margin-top: ${gridUnit * 4}px;
@@ -284,7 +272,7 @@ export class ChartCreation extends React.PureComponent<
   }
 
   isBtnDisabled() {
-    return !(this.state.datasource?.value && this.state.vizType);
+    return !(this.state.vizType);
   }
 
   onVizTypeDoubleClick() {
@@ -344,78 +332,19 @@ export class ChartCreation extends React.PureComponent<
 
   render() {
     const isButtonDisabled = this.isBtnDisabled();
-    const VIEW_INSTRUCTIONS_TEXT = t('view instructions');
-    const datasetHelpText = this.state.canCreateDataset ? (
-      <span data-test="dataset-write">
-        <Link to="/dataset/add/" data-test="add-chart-new-dataset">
-          {t('Add a dataset')}{' '}
-        </Link>
-        {t('or')}{' '}
-        <a
-          href="https://superset.apache.org/docs/creating-charts-dashboards/creating-your-first-dashboard/#registering-a-new-table"
-          rel="noopener noreferrer"
-          target="_blank"
-          data-test="add-chart-new-dataset-instructions"
-        >
-          {`${VIEW_INSTRUCTIONS_TEXT} `}
-          <i className="fa fa-external-link" />
-        </a>
-        .
-      </span>
-    ) : (
-      <span data-test="no-dataset-write">
-        <a
-          href="https://superset.apache.org/docs/creating-charts-dashboards/creating-your-first-dashboard/#registering-a-new-table"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {`${VIEW_INSTRUCTIONS_TEXT} `}
-          <i className="fa fa-external-link" />
-        </a>
-        .
-      </span>
-    );
 
     return (
       <StyledContainer>
         <h3>{t('Create a new chart')}</h3>
-        <Steps direction="vertical" size="small">
-          <Steps.Step
-            title={<StyledStepTitle>{t('Choose a dataset')}</StyledStepTitle>}
-            status={this.state.datasource?.value ? 'finish' : 'process'}
-            description={
-              <StyledStepDescription className="dataset">
-                <AsyncSelect
-                  autoFocus
-                  ariaLabel={t('Dataset')}
-                  name="select-datasource"
-                  onChange={this.changeDatasource}
-                  options={this.loadDatasources}
-                  optionFilterProps={['id', 'label']}
-                  placeholder={t('Choose a dataset')}
-                  showSearch
-                  value={this.state.datasource}
-                />
-                {datasetHelpText}
-              </StyledStepDescription>
-            }
+        <StyledStepDescription>
+          <VizTypeGallery
+              denyList={denyList}
+              className="viz-gallery"
+              onChange={this.changeVizType}
+              onDoubleClick={this.onVizTypeDoubleClick}
+              selectedViz={this.state.vizType}
           />
-          <Steps.Step
-            title={<StyledStepTitle>{t('Choose chart type')}</StyledStepTitle>}
-            status={this.state.vizType ? 'finish' : 'process'}
-            description={
-              <StyledStepDescription>
-                <VizTypeGallery
-                  denyList={denyList}
-                  className="viz-gallery"
-                  onChange={this.changeVizType}
-                  onDoubleClick={this.onVizTypeDoubleClick}
-                  selectedViz={this.state.vizType}
-                />
-              </StyledStepDescription>
-            }
-          />
-        </Steps>
+        </StyledStepDescription>
         <div className="footer">
           {isButtonDisabled && (
             <span>

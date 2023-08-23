@@ -78,7 +78,7 @@ export default function CubeControlPanelDragOption(
 
   return (
     <DatasourceItemContainer data-test="DatasourcePanelDragOption" ref={drag}>
-      {type === DndItemType.Column || type === DndItemType.CubeDimension ? (
+      {type === DndItemType.Column || type === DndItemType.CubeDimension || type === DndItemType.CubeMeasure ? (
         <StyledColumnOption column={value as ColumnMeta} {...optionProps} />
       ) : (
         <StyledMetricOption metric={value as MetricOption} {...optionProps} />

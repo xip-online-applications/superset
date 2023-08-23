@@ -55,8 +55,6 @@ class GetExploreCommand(BaseCommand, ABC):
     ) -> None:
         self._permalink_key = params.permalink_key
         self._form_data_key = params.form_data_key
-        self._datasource_id = params.datasource_id
-        self._datasource_type = params.datasource_type
         self._slice_id = params.slice_id
 
     # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -87,86 +85,20 @@ class GetExploreCommand(BaseCommand, ABC):
                     message = _(
                         "Form data not found in cache, reverting to chart metadata."
                     )
-            elif self._datasource_id:
-                initial_form_data[
-                    "datasource"
-                ] = f"{self._datasource_id}__{self._datasource_type}"
-                if self._form_data_key:
-                    message = _(
-                        "Form data not found in cache, reverting to dataset metadata."
-                    )
 
         form_data, slc = get_form_data(
             slice_id=self._slice_id,
             use_slice_data=True,
             initial_form_data=initial_form_data,
         )
-        try:
-            self._datasource_id, self._datasource_type = get_datasource_info(
-                self._datasource_id, self._datasource_type, form_data
-            )
-        except SupersetException:
-            self._datasource_id = None
-            # fallback unkonw datasource to table type
-            self._datasource_type = SqlaTable.type
-
-        datasource: Optional[BaseDatasource] = None
-        if self._datasource_id is not None:
-            try:
-                datasource = DatasourceDAO.get_datasource(
-                    db.session, cast(str, self._datasource_type), self._datasource_id
-                )
-            except DatasourceNotFound:
-                pass
-        datasource_name = datasource.name if datasource else _("[Missing Dataset]")
-        viz_type = form_data.get("viz_type")
-        if not viz_type and datasource and datasource.default_endpoint:
-            raise WrongEndpointError(redirect=datasource.default_endpoint)
-
-        form_data["datasource"] = (
-            str(self._datasource_id) + "__" + cast(str, self._datasource_type)
-        )
-
         # On explore, merge legacy/extra filters and URL params into the form data
         utils.convert_legacy_filters_into_adhoc(form_data)
         utils.merge_extra_filters(form_data)
         utils.merge_request_params(form_data, request.args)
 
-        # TODO: this is a dummy placeholder - should be refactored to being just `None`
-        datasource_data: dict[str, Any] = {
-            "type": self._datasource_type,
-            "name": datasource_name,
-            "columns": [],
-            "metrics": [],
-            "database": {"id": 0, "backend": ""},
-        }
-        try:
-            if datasource:
-                datasource_data = datasource.data
-        except SupersetException as ex:
-            message = ex.message
-        except SQLAlchemyError:
-            message = "SQLAlchemy error"
-
         metadata = None
 
-        if slc:
-            metadata = {
-                "created_on_humanized": slc.created_on_humanized,
-                "changed_on_humanized": slc.changed_on_humanized,
-                "owners": [owner.get_full_name() for owner in slc.owners],
-                "dashboards": [
-                    {"id": dashboard.id, "dashboard_title": dashboard.dashboard_title}
-                    for dashboard in slc.dashboards
-                ],
-            }
-            if slc.created_by:
-                metadata["created_by"] = slc.created_by.get_full_name()
-            if slc.changed_by:
-                metadata["changed_by"] = slc.changed_by.get_full_name()
-
         return {
-            "dataset": sanitize_datasource_data(datasource_data),
             "form_data": form_data,
             "slice": slc.data if slc else None,
             "message": message,

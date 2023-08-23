@@ -23,7 +23,6 @@ from urllib import parse
 
 import sqlalchemy as sqla
 from flask_appbuilder import Model
-from flask_appbuilder.models.decorators import renders
 from markupsafe import escape, Markup
 from sqlalchemy import (
     Boolean,
@@ -51,7 +50,6 @@ from superset.viz import BaseViz, viz_types
 if TYPE_CHECKING:
     from superset.common.query_context import QueryContext
     from superset.common.query_context_factory import QueryContextFactory
-    from superset.connectors.base.models import BaseDatasource
 
 metadata = Model.metadata  # pylint: disable=no-member
 slice_user = Table(
@@ -74,9 +72,6 @@ class Slice(  # pylint: disable=too-many-public-methods
     __tablename__ = "slices"
     id = Column(Integer, primary_key=True)
     slice_name = Column(String(250))
-    datasource_id = Column(Integer)
-    datasource_type = Column(String(200))
-    datasource_name = Column(String(2000))
     viz_type = Column(String(250))
     params = Column(Text)
     query_context = Column(Text)
@@ -108,16 +103,6 @@ class Slice(  # pylint: disable=too-many-public-methods
         secondaryjoin="and_(TaggedObject.tag_id == Tag.id, "
         "TaggedObject.object_type == 'chart')",
     )
-    table = relationship(
-        "SqlaTable",
-        foreign_keys=[datasource_id],
-        overlaps="table",
-        primaryjoin="and_(Slice.datasource_id == SqlaTable.id, "
-        "Slice.datasource_type == 'table')",
-        remote_side="SqlaTable.id",
-        lazy="subquery",
-    )
-
     token = ""
 
     export_fields = [
@@ -125,82 +110,24 @@ class Slice(  # pylint: disable=too-many-public-methods
         "description",
         "certified_by",
         "certification_details",
-        "datasource_type",
-        "datasource_name",
         "viz_type",
         "params",
         "query_context",
         "cache_timeout",
     ]
-    export_parent = "table"
     extra_import_fields = ["is_managed_externally", "external_url"]
 
     def __repr__(self) -> str:
         return self.slice_name or str(self.id)
 
-    @property
-    def cls_model(self) -> type[BaseDatasource]:
-        # pylint: disable=import-outside-toplevel
-        from superset.daos.datasource import DatasourceDAO
-
-        return DatasourceDAO.sources[self.datasource_type]
-
-    @property
-    def datasource(self) -> BaseDatasource | None:
-        return self.get_datasource
-
     def clone(self) -> Slice:
         return Slice(
             slice_name=self.slice_name,
-            datasource_id=self.datasource_id,
-            datasource_type=self.datasource_type,
-            datasource_name=self.datasource_name,
             viz_type=self.viz_type,
             params=self.params,
             description=self.description,
             cache_timeout=self.cache_timeout,
         )
-
-    # pylint: disable=using-constant-test
-    @datasource.getter  # type: ignore
-    def get_datasource(self) -> BaseDatasource | None:
-        return (
-            db.session.query(self.cls_model)
-            .filter_by(id=self.datasource_id)
-            .one_or_none()
-        )
-
-    @renders("datasource_name")
-    def datasource_link(self) -> Markup | None:
-        # pylint: disable=no-member
-        datasource = self.datasource
-        return datasource.link if datasource else None
-
-    @renders("datasource_url")
-    def datasource_url(self) -> str | None:
-        # pylint: disable=no-member
-        if self.table:
-            return self.table.explore_url
-        datasource = self.datasource
-        return datasource.explore_url if datasource else None
-
-    def datasource_name_text(self) -> str | None:
-        # pylint: disable=no-member
-        if self.table:
-            if self.table.schema:
-                return f"{self.table.schema}.{self.table.table_name}"
-            return self.table.table_name
-        if self.datasource:
-            if self.datasource.schema:
-                return f"{self.datasource.schema}.{self.datasource.name}"
-            return self.datasource.name
-        return None
-
-    @property
-    def datasource_edit_url(self) -> str | None:
-        # pylint: disable=no-member
-        datasource = self.datasource
-        return datasource.url if datasource else None
 
     # pylint: enable=using-constant-test
 
@@ -208,9 +135,8 @@ class Slice(  # pylint: disable=too-many-public-methods
     def viz(self) -> BaseViz | None:
         form_data = json.loads(self.params)
         viz_class = viz_types.get(self.viz_type)
-        datasource = self.datasource
-        if viz_class and datasource:
-            return viz_class(datasource=datasource, form_data=form_data)
+        if viz_class:
+            return viz_class(form_data=form_data)
         return None
 
     @property
@@ -233,7 +159,6 @@ class Slice(  # pylint: disable=too-many-public-methods
             "cache_timeout": self.cache_timeout,
             "changed_on": self.changed_on.isoformat(),
             "changed_on_humanized": self.changed_on_humanized,
-            "datasource": self.datasource_name,
             "description": self.description,
             "description_markeddown": self.description_markeddown,
             "edit_url": self.edit_url,
@@ -277,7 +202,6 @@ class Slice(  # pylint: disable=too-many-public-methods
             {
                 "slice_id": self.id,
                 "viz_type": self.viz_type,
-                "datasource": f"{self.datasource_id}__{self.datasource_type}",
             }
         )
 
@@ -339,14 +263,7 @@ class Slice(  # pylint: disable=too-many-public-methods
 
     @property
     def icons(self) -> str:
-        return f"""
-        <a
-                href="{self.datasource_edit_url}"
-                data-toggle="tooltip"
-                title="{self.datasource}">
-            <i class="fa fa-database"></i>
-        </a>
-        """
+        return f""" """
 
     @property
     def url(self) -> str:
@@ -365,16 +282,6 @@ class Slice(  # pylint: disable=too-many-public-methods
         qry = db.session.query(Slice).filter_by(id=id_)
         return qry.one_or_none()
 
-
-def set_related_perm(_mapper: Mapper, _connection: Connection, target: Slice) -> None:
-    src_class = target.cls_model
-    if id_ := target.datasource_id:
-        ds = db.session.query(src_class).filter_by(id=int(id_)).first()
-        if ds:
-            target.perm = ds.perm
-            target.schema_perm = ds.schema_perm
-
-
 def event_after_chart_changed(
     _mapper: Mapper, _connection: Connection, target: Slice
 ) -> None:
@@ -383,10 +290,6 @@ def event_after_chart_changed(
         chart_id=target.id,
         force=True,
     )
-
-
-sqla.event.listen(Slice, "before_insert", set_related_perm)
-sqla.event.listen(Slice, "before_update", set_related_perm)
 
 if is_feature_enabled("THUMBNAILS_SQLA_LISTENERS"):
     sqla.event.listen(Slice, "after_insert", event_after_chart_changed)

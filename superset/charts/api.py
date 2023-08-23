@@ -151,7 +151,7 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "tags.type",
     ]
 
-    show_select_columns = show_columns + ["table.id"]
+    show_select_columns = show_columns
     list_columns = [
         "is_managed_externally",
         "certified_by",
@@ -168,10 +168,6 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "created_by.last_name",
         "created_by_name",
         "created_on_delta_humanized",
-        "datasource_id",
-        "datasource_name_text",
-        "datasource_type",
-        "datasource_url",
         "description",
         "description_markeddown",
         "edit_url",
@@ -189,8 +185,6 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "params",
         "slice_name",
         "slice_url",
-        "table.default_endpoint",
-        "table.table_name",
         "thumbnail_url",
         "url",
         "viz_type",
@@ -202,8 +196,6 @@ class ChartRestApi(BaseSupersetModelRestApi):
     order_columns = [
         "changed_by.first_name",
         "changed_on_delta_humanized",
-        "datasource_id",
-        "datasource_name",
         "last_saved_at",
         "last_saved_by.id",
         "last_saved_by.first_name",
@@ -216,9 +208,6 @@ class ChartRestApi(BaseSupersetModelRestApi):
         "changed_by",
         "last_saved_at",
         "last_saved_by",
-        "datasource_id",
-        "datasource_name",
-        "datasource_type",
         "description",
         "id",
         "owners",

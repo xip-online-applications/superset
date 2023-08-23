@@ -33,7 +33,6 @@ import {
   LocalStorageKeys,
 } from 'src/utils/localStorageHelpers';
 import {
-  SamplesPane,
   TableControlsWrapper,
   useResultsPane,
 } from './components';
@@ -82,7 +81,6 @@ const SouthPane = styled.div`
 
 export const DataTablesPane = ({
   queryFormData,
-  datasource,
   queryForce,
   onCollapseChange,
   chartStatus,
@@ -228,15 +226,6 @@ export const DataTablesPane = ({
         onTabClick={handleTabClick}
       >
         {queryResultsPanes}
-        <Tabs.TabPane tab={t('Samples')} key={ResultTypes.Samples}>
-          <SamplesPane
-            datasource={datasource}
-            queryForce={queryForce}
-            isRequest={isRequest.samples}
-            actions={actions}
-            isVisible={ResultTypes.Samples === activeTabKey}
-          />
-        </Tabs.TabPane>
       </Tabs>
     </SouthPane>
   );

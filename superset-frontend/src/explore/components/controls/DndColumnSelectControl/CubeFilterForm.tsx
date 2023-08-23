@@ -16,13 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {useCallback, useMemo, useState, useEffect, createRef} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {CubeControlPanelDndItem} from "../../CubeControlPanel/types";
 import { Button, Form, Input, Select } from 'antd';
-import {Cube, Meta, TCubeDimension} from "@cubejs-client/core";
 const { Option } = Select;
-import cubejs, { Meta, Cube } from "@cubejs-client/core";
-import {CubeFilterSelectOption} from "./CubeAdHocFilterControl";
+import cubejs, { Cube, Meta, TCubeDimension } from "@cubejs-client/core";
+import {CubeFilterSelectOption} from "../../../../views/CRUD/types";
 
 export type CubeAdHocFilterPopupProps = {
   closePopover: () => void;
@@ -31,8 +30,8 @@ export type CubeAdHocFilterPopupProps = {
 }
 
 const layout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 },
+  labelCol: { span: 24 },
+  wrapperCol: { span: 24 },
 };
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
@@ -106,16 +105,18 @@ function CubeFilterForm(props: CubeAdHocFilterPopupProps) {
     closePopover();
   };
 
-  const rootElem = createRef<HTMLDivElement>();
-
   if (cubes.length === 0) {
     return (<span>Loading...</span>);
   }
 
   return (
-    <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-      <Form.Item name="cube" label="Cube" rules={[{ required: true }]}>
+    <Form style={{width: '500px'}} {...layout} form={form} name="control-hooks" onFinish={onFinish} layout="vertical">
+      <Form.Item
+          name="cube" label="Cube" rules={[{ required: true }]}
+      >
         <Select
+
+
           placeholder="Select a cube"
           onChange={onCubeChange}
           allowClear
@@ -128,7 +129,6 @@ function CubeFilterForm(props: CubeAdHocFilterPopupProps) {
 
       <Form.Item
         name="dimension" label="Dimension" rules={[{ required: true }]}
-        noStyle
         shouldUpdate={(prevValues, currentValues) => prevValues.cube !== currentValues.cube}
       >
         {selectedCube != null ? (
@@ -150,7 +150,6 @@ function CubeFilterForm(props: CubeAdHocFilterPopupProps) {
           <>
             <Form.Item
               name="operator" label="Operator" rules={[{ required: true }]}
-              noStyle
             >
               <Select
                 placeholder="Select an operator"
@@ -173,7 +172,11 @@ function CubeFilterForm(props: CubeAdHocFilterPopupProps) {
               </Select>
             </Form.Item>
 
-            <Form.Item name="value" label="Value" rules={[{ required: true }]}>
+            <Form.Item
+                name="value"
+                label="Value"
+                rules={[{ required: true }]}
+            >
               <Input />
             </Form.Item>
           </>

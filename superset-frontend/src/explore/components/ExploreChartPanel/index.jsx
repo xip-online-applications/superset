@@ -53,7 +53,6 @@ const propTypes = {
   onQuery: PropTypes.func,
   can_overwrite: PropTypes.bool.isRequired,
   can_download: PropTypes.bool.isRequired,
-  datasource: PropTypes.object,
   dashboardId: PropTypes.number,
   column_formats: PropTypes.object,
   containerId: PropTypes.string.isRequired,
@@ -128,7 +127,6 @@ const ExploreChartPanel = ({
   ownState,
   triggerRender,
   force,
-  datasource,
   errorMessage,
   form_data: formData,
   onQuery,
@@ -158,48 +156,11 @@ const ExploreChartPanel = ({
       : getItem(LocalStorageKeys.is_datapanel_open, false),
   );
 
-  const [showDatasetModal, setShowDatasetModal] = useState(false);
-
-  const metaDataRegistry = getChartMetadataRegistry();
-  const { useLegacyApi } = metaDataRegistry.get(vizType) ?? {};
-  const vizTypeNeedsDataset =
-    useLegacyApi && datasource.type !== DatasourceType.Table;
-  // added boolean column to below show boolean so that the errors aren't overlapping
   const showAlertBanner =
     !chartAlert &&
     chartIsStale &&
-    !vizTypeNeedsDataset &&
     chart.chartStatus !== 'failed' &&
     ensureIsArray(chart.queriesResponse).length > 0;
-
-  const updateQueryContext = useCallback(
-    async function fetchChartData() {
-      if (slice && slice.query_context === null) {
-        const queryContext = buildV1ChartDataPayload({
-          formData: slice.form_data,
-          force,
-          resultFormat: 'json',
-          resultType: 'full',
-          setDataMask: null,
-          ownState: null,
-        });
-
-        await SupersetClient.put({
-          endpoint: `/api/v1/chart/${slice.slice_id}`,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query_context: JSON.stringify(queryContext),
-            query_context_generation: true,
-          }),
-        });
-      }
-    },
-    [slice],
-  );
-
-  useEffect(() => {
-    updateQueryContext();
-  }, [updateQueryContext]);
 
   useEffect(() => {
     setItem(LocalStorageKeys.chart_split_sizes, splitSizes);
@@ -258,7 +219,6 @@ const ExploreChartPanel = ({
             chartStatus={chart.chartStatus}
             triggerRender={triggerRender}
             force={force}
-            datasource={datasource}
             errorMessage={errorMessage}
             formData={formData}
             latestQueryFormData={chart.latestQueryFormData}
@@ -287,7 +247,6 @@ const ExploreChartPanel = ({
       chartPanelHeight,
       chartPanelRef,
       chartPanelWidth,
-      datasource,
       errorMessage,
       force,
       formData,
@@ -309,31 +268,6 @@ const ExploreChartPanel = ({
         `}
         ref={resizeObserverRef}
       >
-        {vizTypeNeedsDataset && (
-          <Alert
-            message={t('Chart type requires a dataset')}
-            type="error"
-            css={theme => css`
-              margin: 0 0 ${theme.gridUnit * 4}px 0;
-            `}
-            description={
-              <>
-                {t(
-                  'This chart type is not supported when using an unsaved query as a chart source. ',
-                )}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setShowDatasetModal(true)}
-                  css={{ textDecoration: 'underline' }}
-                >
-                  {t('Create a dataset')}
-                </span>
-                {t(' to visualize your data.')}
-              </>
-            }
-          />
-        )}
         {showAlertBanner && (
           <ExploreAlert
             title={
@@ -430,42 +364,26 @@ const ExploreChartPanel = ({
       className="panel panel-default chart-container"
       showSplite={showSplite}
     >
-      {vizType === 'filter_box' ? (
-        panelBody
-      ) : (
-        <Split
-          sizes={splitSizes}
-          minSize={MIN_SIZES}
-          direction="vertical"
-          gutterSize={gutterHeight}
-          onDragEnd={onDragEnd}
-          elementStyle={elementStyle}
-          expandToMin
-        >
-          {panelBody}
-          <DataTablesPane
-            ownState={ownState}
-            queryFormData={queryFormData}
-            datasource={datasource}
-            queryForce={force}
-            onCollapseChange={onCollapseChange}
-            chartStatus={chart.chartStatus}
-            errorMessage={errorMessage}
-            actions={actions}
-          />
-        </Split>
-      )}
-      {showDatasetModal && (
-        <SaveDatasetModal
-          visible={showDatasetModal}
-          onHide={() => setShowDatasetModal(false)}
-          buttonTextOnSave={t('Save')}
-          buttonTextOnOverwrite={t('Overwrite')}
-          datasource={getDatasourceAsSaveableDataset(datasource)}
-          openWindow={false}
-          formData={formData}
+      <Split
+        sizes={splitSizes}
+        minSize={MIN_SIZES}
+        direction="vertical"
+        gutterSize={gutterHeight}
+        onDragEnd={onDragEnd}
+        elementStyle={elementStyle}
+        expandToMin
+      >
+        {panelBody}
+        <DataTablesPane
+          ownState={ownState}
+          queryFormData={queryFormData}
+          queryForce={force}
+          onCollapseChange={onCollapseChange}
+          chartStatus={chart.chartStatus}
+          errorMessage={errorMessage}
+          actions={actions}
         />
-      )}
+      </Split>
     </Styles>
   );
 };

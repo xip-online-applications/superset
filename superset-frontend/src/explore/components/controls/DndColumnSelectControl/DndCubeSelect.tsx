@@ -34,12 +34,14 @@ import OptionWrapper from "./OptionWrapper";
 import {CubeControlPanelDndItem} from "../../CubeControlPanel/types";
 
 export type DndCubeSelectProps = DndControlProps<QueryFormColumn> & {
+    acceptType?: DndItemType;
 };
 
 function DndCubeSelect(props: DndCubeSelectProps) {
   const {
     value,
     multi = true,
+    acceptType = DndItemType.CubeDimension,
     onChange,
     canDelete = true,
     ghostButtonText,
@@ -114,7 +116,7 @@ function DndCubeSelect(props: DndCubeSelectProps) {
             index={idx}
             clickClose={onClickClose}
             onShiftOptions={onShiftOptions}
-            type={`${DndItemType.CubeDimension}_${name}_${label}`}
+            type={`${acceptType}_${name}_${label}`}
             canDelete={canDelete}
             column={column}
           />
@@ -169,7 +171,7 @@ function DndCubeSelect(props: DndCubeSelectProps) {
         onDrop={onDrop}
         canDrop={canDrop}
         valuesRenderer={valuesRenderer}
-        accept={DndItemType.CubeDimension}
+        accept={acceptType}
         displayGhostButton={multi || selectedOptions.length === 0}
         ghostButtonText={labelGhostButtonText}
         onClickGhostButton={openPopover}

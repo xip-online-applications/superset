@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {useCallback, useMemo, useState, useEffect, createRef} from 'react';
+import React, {createRef} from 'react';
 import ControlPopover from "../ControlPopover/ControlPopover";
 import {CubeControlPanelDndItem} from "../../CubeControlPanel/types";
 import {ExplorePopoverContent} from "../../ExploreContentPopover";
 import {styled} from "@superset-ui/core";
 import CubeFilterForm from "./CubeFilterForm";
-import {CubeFilterSelectOption} from "./CubeAdHocFilterControl";
+import {CubeFilterSelectOption} from "../../../../views/CRUD/types";
 
 const FilterPopoverContentContainer = styled.div`
   .adhoc-filter-edit-tabs > .nav-tabs {

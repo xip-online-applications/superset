@@ -71,7 +71,7 @@ export type Datasource = Dataset & {
 };
 
 export interface ExplorePageInitialData {
-  dataset: Dataset;
+  // dataset: Dataset;
   form_data: QueryFormData;
   slice: Slice | null;
   metadata?: {
@@ -96,7 +96,7 @@ export interface ExplorePageState {
     locale: string;
   };
   charts: { [key: number]: ChartState };
-  datasources: { [key: string]: Dataset };
+  // datasources: { [key: string]: Dataset };
   explore: {
     can_add: boolean;
     can_download: boolean;
@@ -105,7 +105,7 @@ export interface ExplorePageState {
     isStarred: boolean;
     triggerRender: boolean;
     // duplicate datasource in exploreState - it's needed by getControlsState
-    datasource: Dataset;
+    // datasource: Dataset;
     controls: ControlStateMapping;
     form_data: QueryFormData;
     slice: Slice;

@@ -19,17 +19,12 @@
 import React, {
   MouseEvent,
   Key,
-  ReactChild,
-  useState,
-  useCallback,
 } from 'react';
 import {
   Link,
   RouteComponentProps,
-  useHistory,
   withRouter,
 } from 'react-router-dom';
-import moment from 'moment';
 import {
   Behavior,
   css,
@@ -38,23 +33,15 @@ import {
   QueryFormData,
   styled,
   t,
-  useTheme,
 } from '@superset-ui/core';
 import { useSelector } from 'react-redux';
 import { Menu } from 'src/components/Menu';
 import { NoAnimationDropdown } from 'src/components/Dropdown';
-import ShareMenuItems from 'src/dashboard/components/menu/ShareMenuItems';
 import downloadAsImage from 'src/utils/downloadAsImage';
 import { isFeatureEnabled } from 'src/featureFlags';
 import { getSliceHeaderTooltip } from 'src/dashboard/util/getSliceHeaderTooltip';
 import { Tooltip } from 'src/components/Tooltip';
 import Icons from 'src/components/Icons';
-import ModalTrigger from 'src/components/ModalTrigger';
-import Button from 'src/components/Button';
-import ViewQueryModal from 'src/explore/components/controls/ViewQueryModal';
-import { ResultsPaneOnDashboard } from 'src/explore/components/DataTablesPane';
-import Modal from 'src/components/Modal';
-import { DrillDetailMenuItems } from 'src/components/Chart/DrillDetail';
 import { LOG_ACTIONS_CHART_DOWNLOAD_AS_IMAGE } from 'src/logger/LogUtils';
 import { RootState } from 'src/dashboard/types';
 import { useCrossFiltersScopingModal } from '../nativeFilters/FilterBar/CrossFilters/ScopingModal/useCrossFiltersScopingModal';
@@ -94,17 +81,6 @@ const VerticalDotsContainer = styled.div`
   &:hover {
     cursor: pointer;
   }
-`;
-
-const RefreshTooltip = styled.div`
-  height: auto;
-  margin: ${({ theme }) => theme.gridUnit}px 0;
-  color: ${({ theme }) => theme.colors.grayscale.base};
-  line-height: 21px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
 `;
 
 const getScreenshotNodeSelector = (chartId: string | number) =>
@@ -168,83 +144,6 @@ const dropdownIconsStyles = css`
     vertical-align: 0;
   }
 `;
-
-const ViewResultsModalTrigger = ({
-  exploreUrl,
-  triggerNode,
-  modalTitle,
-  modalBody,
-}: {
-  exploreUrl: string;
-  triggerNode: ReactChild;
-  modalTitle: ReactChild;
-  modalBody: ReactChild;
-}) => {
-  const [showModal, setShowModal] = useState(false);
-  const openModal = useCallback(() => setShowModal(true), []);
-  const closeModal = useCallback(() => setShowModal(false), []);
-  const history = useHistory();
-  const exploreChart = () => history.push(exploreUrl);
-  const theme = useTheme();
-
-  return (
-    <>
-      <span
-        data-test="span-modal-trigger"
-        onClick={openModal}
-        role="button"
-        tabIndex={0}
-      >
-        {triggerNode}
-      </span>
-      {(() => (
-        <Modal
-          css={css`
-            .ant-modal-body {
-              display: flex;
-              flex-direction: column;
-            }
-          `}
-          show={showModal}
-          onHide={closeModal}
-          title={modalTitle}
-          footer={
-            <>
-              <Button
-                buttonStyle="secondary"
-                buttonSize="small"
-                onClick={exploreChart}
-              >
-                {t('Edit chart')}
-              </Button>
-              <Button
-                buttonStyle="primary"
-                buttonSize="small"
-                onClick={closeModal}
-              >
-                {t('Close')}
-              </Button>
-            </>
-          }
-          responsive
-          resizable
-          resizableConfig={{
-            minHeight: theme.gridUnit * 128,
-            minWidth: theme.gridUnit * 128,
-            defaultSize: {
-              width: 'auto',
-              height: '75vh',
-            },
-          }}
-          draggable
-          destroyOnClose
-        >
-          {modalBody}
-        </Modal>
-      ))()}
-    </>
-  );
-};
 
 const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
   const [openScopingModal, scopingModal] = useCrossFiltersScopingModal(
@@ -335,40 +234,9 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
   };
 
   const {
-    componentId,
-    dashboardId,
     slice,
     isFullSize,
-    cachedDttm = [],
-    updatedDttm = null,
-    addSuccessToast = () => {},
-    addDangerToast = () => {},
-    supersetCanShare = false,
-    isCached = [],
   } = props;
-  const isTable = slice.viz_type === 'table';
-  const cachedWhen = (cachedDttm || []).map(itemCachedDttm =>
-    moment.utc(itemCachedDttm).fromNow(),
-  );
-  const updatedWhen = updatedDttm ? moment.utc(updatedDttm).fromNow() : '';
-  const getCachedTitle = (itemCached: boolean) => {
-    if (itemCached) {
-      return t('Cached %s', cachedWhen);
-    }
-    if (updatedWhen) {
-      return t('Fetched %s', updatedWhen);
-    }
-    return '';
-  };
-  const refreshTooltipData = [...new Set(isCached.map(getCachedTitle) || '')];
-  // If all queries have same cache time we can unit them to one
-  const refreshTooltip = refreshTooltipData.map((item, index) => (
-    <div key={`tooltip-${index}`}>
-      {refreshTooltipData.length > 1
-        ? t('Query %s: %s', index + 1, item)
-        : item}
-    </div>
-  ));
   const fullscreenLabel = isFullSize
     ? t('Exit fullscreen')
     : t('Enter fullscreen');
@@ -379,21 +247,7 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
       selectable={false}
       data-test={`slice_${slice.slice_id}-menu`}
     >
-      <Menu.Item
-        key={MENU_KEYS.FORCE_REFRESH}
-        disabled={props.chartStatus === 'loading'}
-        style={{ height: 'auto', lineHeight: 'initial' }}
-        data-test="refresh-chart-menu-item"
-      >
-        {t('Force refresh')}
-        <RefreshTooltip data-test="dashboard-slice-refresh-tooltip">
-          {refreshTooltip}
-        </RefreshTooltip>
-      </Menu.Item>
-
       <Menu.Item key={MENU_KEYS.FULLSCREEN}>{fullscreenLabel}</Menu.Item>
-
-      <Menu.Divider />
 
       {slice.description && (
         <Menu.Item key={MENU_KEYS.TOGGLE_CHART_DESCRIPTION}>
@@ -421,103 +275,8 @@ const SliceHeaderControls = (props: SliceHeaderControlsPropsWithRouter) => {
           <Menu.Divider />
         </>
       )}
-
-      {props.supersetCanExplore && (
-        <Menu.Item key={MENU_KEYS.VIEW_QUERY}>
-          <ModalTrigger
-            triggerNode={
-              <span data-test="view-query-menu-item">{t('View query')}</span>
-            }
-            modalTitle={t('View query')}
-            modalBody={<ViewQueryModal latestQueryFormData={props.formData} />}
-            draggable
-            resizable
-            responsive
-          />
-        </Menu.Item>
-      )}
-
-      {props.supersetCanExplore && (
-        <Menu.Item key={MENU_KEYS.VIEW_RESULTS}>
-          <ViewResultsModalTrigger
-            exploreUrl={props.exploreUrl}
-            triggerNode={
-              <span data-test="view-query-menu-item">{t('View as table')}</span>
-            }
-            modalTitle={t('Chart Data: %s', slice.slice_name)}
-            modalBody={
-              <ResultsPaneOnDashboard
-                queryFormData={props.formData}
-                queryForce={false}
-                dataSize={20}
-                isRequest
-                isVisible
-              />
-            }
-          />
-        </Menu.Item>
-      )}
-
-      {isFeatureEnabled(FeatureFlag.DRILL_TO_DETAIL) &&
-        props.supersetCanExplore && (
-          <DrillDetailMenuItems
-            chartId={slice.slice_id}
-            formData={props.formData}
-          />
-        )}
-
-      {(slice.description || props.supersetCanExplore) && <Menu.Divider />}
-
-      {supersetCanShare && (
-        <Menu.SubMenu title={t('Share')}>
-          <ShareMenuItems
-            dashboardId={dashboardId}
-            dashboardComponentId={componentId}
-            copyMenuItemTitle={t('Copy permalink to clipboard')}
-            emailMenuItemTitle={t('Share chart by email')}
-            emailSubject={t('Superset chart')}
-            emailBody={t('Check out this chart: ')}
-            addSuccessToast={addSuccessToast}
-            addDangerToast={addDangerToast}
-          />
-        </Menu.SubMenu>
-      )}
-
       {props.slice.viz_type !== 'filter_box' && props.supersetCanCSV && (
         <Menu.SubMenu title={t('Download')}>
-          <Menu.Item
-            key={MENU_KEYS.EXPORT_CSV}
-            icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
-          >
-            {t('Export to .CSV')}
-          </Menu.Item>
-          <Menu.Item
-            key={MENU_KEYS.EXPORT_XLSX}
-            icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
-          >
-            {t('Export to Excel')}
-          </Menu.Item>
-
-          {props.slice.viz_type !== 'filter_box' &&
-            isFeatureEnabled(FeatureFlag.ALLOW_FULL_CSV_EXPORT) &&
-            props.supersetCanCSV &&
-            isTable && (
-              <>
-                <Menu.Item
-                  key={MENU_KEYS.EXPORT_FULL_CSV}
-                  icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
-                >
-                  {t('Export to full .CSV')}
-                </Menu.Item>
-                <Menu.Item
-                  key={MENU_KEYS.EXPORT_FULL_XLSX}
-                  icon={<Icons.FileOutlined css={dropdownIconsStyles} />}
-                >
-                  {t('Export to full Excel')}
-                </Menu.Item>
-              </>
-            )}
-
           <Menu.Item
             key={MENU_KEYS.DOWNLOAD_AS_IMAGE}
             icon={<Icons.FileImageOutlined css={dropdownIconsStyles} />}

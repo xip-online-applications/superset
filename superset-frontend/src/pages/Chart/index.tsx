@@ -21,7 +21,6 @@ import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import {
   getSharedLabelColor,
-  isDefined,
   JsonObject,
   makeApi,
   SharedLabelColorSource,
@@ -43,7 +42,7 @@ import { getItem, LocalStorageKeys } from 'src/utils/localStorageHelpers';
 import { getFormDataWithDashboardContext } from 'src/explore/controlUtils/getFormDataWithDashboardContext';
 
 const isValidResult = (rv: JsonObject): boolean =>
-  rv?.result?.form_data && isDefined(rv?.result?.dataset?.id);
+  rv?.result?.form_data;
 
 const fetchExploreData = async (exploreUrlParams: URLSearchParams) => {
   try {

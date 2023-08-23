@@ -91,11 +91,6 @@ class ChartFilter(BaseFilter):  # pylint: disable=too-few-public-methods
         if security_manager.can_access_all_datasources():
             return query
 
-        table_alias = aliased(SqlaTable)
-        query = query.join(table_alias, self.model.datasource_id == table_alias.id)
-        query = query.join(
-            models.Database, table_alias.database_id == models.Database.id
-        )
         return query.filter(get_dataset_access_filters(self.model))
 
 

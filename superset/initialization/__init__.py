@@ -129,7 +129,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             RowLevelSecurityView,
             SqlMetricInlineView,
             TableColumnInlineView,
-            TableModelView,
         )
         from superset.css_templates.api import CssTemplateRestApi
         from superset.dashboards.api import DashboardRestApi
@@ -153,7 +152,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         from superset.reports.logs.api import ReportExecutionLogRestApi
         from superset.row_level_security.api import RLSRestApi
         from superset.security.api import SecurityRestApi
-        from superset.sqllab.api import SqlLabRestApi
         from superset.tags.api import TagRestApi
         from superset.views.alerts import AlertView, ReportView
         from superset.views.all_entities import TaggedObjectsModelView, TaggedObjectView
@@ -170,13 +168,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             DashboardModelView,
             DashboardModelViewAsync,
         )
-        from superset.views.database.views import (
-            ColumnarToDatabaseView,
-            CsvToDatabaseView,
-            DatabaseView,
-            ExcelToDatabaseView,
-        )
-        from superset.views.datasource.views import DatasetEditor, Datasource
         from superset.views.dynamic_plugins import DynamicPluginsView
         from superset.views.explore import ExplorePermalinkView, ExploreView
         from superset.views.key_value import KV
@@ -184,9 +175,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         from superset.views.log.views import LogModelView
         from superset.views.redirects import R
         from superset.views.sql_lab.views import (
-            SavedQueryView,
-            SavedQueryViewApi,
-            SqlLab,
             TableSchemaView,
             TabStateView,
         )
@@ -226,7 +214,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         appbuilder.add_api(RLSRestApi)
         appbuilder.add_api(SavedQueryRestApi)
         appbuilder.add_api(TagRestApi)
-        appbuilder.add_api(SqlLabRestApi)
         #
         # Setup regular views
         #
@@ -235,15 +222,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             label=__("Home"),
             href="/superset/welcome/",
             cond=lambda: bool(appbuilder.app.config["LOGO_TARGET_PATH"]),
-        )
-
-        appbuilder.add_view(
-            DatabaseView,
-            "Databases",
-            label=__("Database Connections"),
-            icon="fa-database",
-            category="Data",
-            category_label=__("Data"),
         )
         appbuilder.add_view(
             DashboardModelView,
@@ -258,15 +236,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             "Charts",
             label=__("Charts"),
             icon="fa-bar-chart",
-            category="",
-            category_icon="",
-        )
-
-        appbuilder.add_link(
-            "Datasets",
-            label=__("Datasets"),
-            href="/tablemodelview/list/",
-            icon="fa-table",
             category="",
             category_icon="",
         )
@@ -296,27 +265,16 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         # Setup views with no menu
         #
         appbuilder.add_view_no_menu(Api)
-        appbuilder.add_view_no_menu(CssTemplateAsyncModelView)
-        appbuilder.add_view_no_menu(CsvToDatabaseView)
-        appbuilder.add_view_no_menu(ExcelToDatabaseView)
-        appbuilder.add_view_no_menu(ColumnarToDatabaseView)
         appbuilder.add_view_no_menu(Dashboard)
         appbuilder.add_view_no_menu(DashboardModelViewAsync)
-        appbuilder.add_view_no_menu(Datasource)
-        appbuilder.add_view_no_menu(DatasetEditor)
         appbuilder.add_view_no_menu(EmbeddedView)
         appbuilder.add_view_no_menu(ExploreView)
         appbuilder.add_view_no_menu(ExplorePermalinkView)
         appbuilder.add_view_no_menu(KV)
         appbuilder.add_view_no_menu(R)
-        appbuilder.add_view_no_menu(SavedQueryView)
-        appbuilder.add_view_no_menu(SavedQueryViewApi)
         appbuilder.add_view_no_menu(SliceAsync)
-        appbuilder.add_view_no_menu(SqlLab)
-        appbuilder.add_view_no_menu(SqlMetricInlineView)
         appbuilder.add_view_no_menu(Superset)
         appbuilder.add_view_no_menu(TableColumnInlineView)
-        appbuilder.add_view_no_menu(TableModelView)
         appbuilder.add_view_no_menu(TableSchemaView)
         appbuilder.add_view_no_menu(TabStateView)
         appbuilder.add_view_no_menu(TaggedObjectView)
@@ -341,32 +299,6 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
             ),
         )
 
-        appbuilder.add_link(
-            "SQL Editor",
-            label=__("SQL Lab"),
-            href="/superset/sqllab/",
-            category_icon="fa-flask",
-            icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Saved Queries",
-            label=__("Saved Queries"),
-            href="/savedqueryview/list/",
-            icon="fa-save",
-            category="SQL Lab",
-            category_label=__("SQL"),
-        )
-        appbuilder.add_link(
-            "Query Search",
-            label=__("Query History"),
-            href="/superset/sqllab/history/",
-            icon="fa-search",
-            category_icon="fa-flask",
-            category="SQL Lab",
-            category_label=__("SQL Lab"),
-        )
         appbuilder.add_view(
             TagModelView,
             "Tags",

@@ -48,6 +48,8 @@ import DndColumnSelectControl, {
 import XAxisSortControl from './XAxisSortControl';
 import {DndCubeSelect} from "./DndColumnSelectControl/DndCubeSelect";
 import CubeAdHocFilterControl from "./DndColumnSelectControl/CubeAdHocFilterControl";
+import CubeCrossFilterControl from "./DndColumnSelectControl/CubeCrossFilterControl";
+import ActionButtonControl from "./DndColumnSelectControl/ActionButtonControl";
 
 const controlMap = {
   AnnotationLayerControl,
@@ -80,6 +82,8 @@ const controlMap = {
   XAxisSortControl,
   DndCubeSelect,
   CubeAdHocFilterControl,
+  CubeCrossFilterControl,
+  ActionButtonControl,
   ...sharedControlComponents,
 };
 export default controlMap;

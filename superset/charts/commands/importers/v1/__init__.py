@@ -80,21 +80,3 @@ class ImportChartsCommand(ImportModelsCommand):
                 dataset = import_dataset(session, config, overwrite=False)
                 datasets[str(dataset.uuid)] = dataset
 
-        # import charts with the correct parent ref
-        for file_name, config in configs.items():
-            if file_name.startswith("charts/") and config["dataset_uuid"] in datasets:
-                # update datasource id, type, and name
-                dataset = datasets[config["dataset_uuid"]]
-                config.update(
-                    {
-                        "datasource_id": dataset.id,
-                        "datasource_type": "table",
-                        "datasource_name": dataset.table_name,
-                    }
-                )
-                config["params"].update({"datasource": dataset.uid})
-
-                if "query_context" in config:
-                    del config["query_context"]
-
-                import_chart(session, config, overwrite=overwrite)

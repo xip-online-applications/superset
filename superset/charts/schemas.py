@@ -202,27 +202,8 @@ class ChartPostSchema(Schema):
         allow_none=True,
         validate=utils.validate_json,
     )
-    query_context = fields.String(
-        metadata={"description": query_context_description},
-        allow_none=True,
-        validate=utils.validate_json,
-    )
-    query_context_generation = fields.Boolean(
-        metadata={"description": query_context_generation_description}, allow_none=True
-    )
     cache_timeout = fields.Integer(
         metadata={"description": cache_timeout_description}, allow_none=True
-    )
-    datasource_id = fields.Integer(
-        metadata={"description": datasource_id_description}, required=True
-    )
-    datasource_type = fields.String(
-        metadata={"description": datasource_type_description},
-        validate=validate.OneOf(choices=[ds.value for ds in DatasourceType]),
-        required=True,
-    )
-    datasource_name = fields.String(
-        metadata={"description": datasource_name_description}, allow_none=True
     )
     dashboards = fields.List(
         fields.Integer(metadata={"description": dashboards_description})
@@ -262,22 +243,8 @@ class ChartPutSchema(Schema):
     params = fields.String(
         metadata={"description": params_description}, allow_none=True
     )
-    query_context = fields.String(
-        metadata={"description": query_context_description}, allow_none=True
-    )
-    query_context_generation = fields.Boolean(
-        metadata={"description": query_context_generation_description}, allow_none=True
-    )
     cache_timeout = fields.Integer(
         metadata={"description": cache_timeout_description}, allow_none=True
-    )
-    datasource_id = fields.Integer(
-        metadata={"description": datasource_id_description}, allow_none=True
-    )
-    datasource_type = fields.String(
-        metadata={"description": datasource_type_description},
-        validate=validate.OneOf(choices=[ds.value for ds in DatasourceType]),
-        allow_none=True,
     )
     dashboards = fields.List(
         fields.Integer(metadata={"description": dashboards_description})

@@ -1,7 +1,7 @@
 
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {Cube, TCubeDimension, TCubeMemberType} from "@cubejs-client/core";
-import {css, GenericDataType, styled, SupersetTheme, t} from "@superset-ui/core";
+import React, {useMemo, useRef, useState} from 'react';
+import {BaseCubeMember, Cube, TCubeMemberType} from "@cubejs-client/core";
+import {css, GenericDataType, styled, t} from "@superset-ui/core";
 import {DndItemType} from "../DndItemType";
 import {Collapse} from "antd";
 import CubeControlPanelDragOption from "./CubeControlPanelDragOption";
@@ -102,6 +102,7 @@ export default function CubePanel({
                                     shouldForceUpdate,
                                   }: Props) {
   const [dimentions, setDimentions] = useState(cube.dimensions);
+  const [measures, setMeasures] = useState(cube.measures);
 
   const mainBody = useMemo(() => (
     <>
@@ -133,6 +134,30 @@ export default function CubePanel({
             ))}
           </Collapse.Panel>
         )}
+        {measures.length && (
+          <Collapse.Panel
+            header={<SectionHeader>{t('Measures')}</SectionHeader>}
+            key="measures"
+          >
+            <div className="field-length">
+              {t(
+                `Showing %s`,
+                measures?.length,
+              )}
+            </div>
+            {measures.map((measure, index) => (
+              <LabelContainer
+                key={measure.name + String(shouldForceUpdate)}
+                className="column"
+              >
+                <CubeControlPanelDragOption
+                  value={parseToSupersetColumn(measure, cube)}
+                  type={DndItemType.CubeMeasure}
+                />
+              </LabelContainer>
+            ))}
+          </Collapse.Panel>
+        )}
       </Collapse>
     </>
   ), [dimentions])
@@ -140,14 +165,14 @@ export default function CubePanel({
   return (
     <ExploreCubePanelContainer>
       <div className="cube-title-container">
-        <span className="cube-title">{cube.name}</span>
+        <span className="cube-title">{cube.title}</span>
       </div>
       {mainBody}
     </ExploreCubePanelContainer>
   );
 }
 
-const parseToSupersetColumn = (cubeDimension: TCubeDimension, cube: Cube) => {
+const parseToSupersetColumn = (cubeDimension: BaseCubeMember, cube: Cube) => {
   return {
     column_name: cubeDimension.shortTitle,
     type_generic: parseToSupersetType(cubeDimension.type),

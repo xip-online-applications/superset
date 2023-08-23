@@ -27,19 +27,13 @@ import { DndControlProps } from './types';
 import OptionWrapper from "./OptionWrapper";
 import {CubeControlPanelDndItem} from "../../CubeControlPanel/types";
 import CubeAdHocFilterPopup from "./CubeAdHocFilterPopup";
+import {CubeFilterSelectOption} from "../../../../views/CRUD/types";
 
 export type DndCubeSelectProps = DndControlProps<QueryFormColumn> & {
 };
 
-export type CubeFilterSelectOption = {
-  cube: string;
-  col: string;
-  op: string;
-  val: string;
-}
-
 export function isCubeFilterSelectOption(option: any): option is CubeFilterSelectOption {
-  return option && option.cube && option.column && option.operator && option.value;
+    return option && option.cube && option.col && option.op && option.val;
 }
 
 function CubeAdHocFilterControl(props: DndCubeSelectProps) {
@@ -67,7 +61,6 @@ function CubeAdHocFilterControl(props: DndCubeSelectProps) {
 
   const onDrop = useCallback(
     (item: CubeControlPanelDndItem) => {
-      console.log("onDrop", item);
       setDroppedItem(item);
       setNewColumnPopoverVisible(true);
     },
@@ -75,7 +68,6 @@ function CubeAdHocFilterControl(props: DndCubeSelectProps) {
   );
 
   useEffect(() => {
-    console.log("selectedOptions", selectedFilters);
     onChange(selectedFilters);
   }, [onChange, selectedFilters]);
 
@@ -95,7 +87,6 @@ function CubeAdHocFilterControl(props: DndCubeSelectProps) {
       const newOptions = [...selectedFilters];
       newOptions.splice(index, 1);
       setSelectedFilters(newOptions);
-      // onChange(newOptions)
     },
     [onChange, selectedFilters],
   );
@@ -105,7 +96,6 @@ function CubeAdHocFilterControl(props: DndCubeSelectProps) {
       const newOptions = [...selectedFilters];
       [newOptions[dragIndex], newOptions[hoverIndex]] = [newOptions[hoverIndex], newOptions[dragIndex]];
       setSelectedFilters(newOptions);
-      //onChange(newOptions)
     },
     [onChange, selectedFilters],
   );

@@ -25,6 +25,4 @@ class CommandParameters:
     actor: User
     permalink_key: Optional[str]
     form_data_key: Optional[str]
-    datasource_id: Optional[int]
-    datasource_type: Optional[str]
     slice_id: Optional[int]
