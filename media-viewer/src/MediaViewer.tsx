@@ -35,7 +35,7 @@ const contentStyle: React.CSSProperties = {
 };
 
 export default function MediaViewer(props: MediaViewerProps) {
-  const { height, width , cubeFilters, cubeSingle, filters} = props;
+  const { cubeConfig, height, width , cubeFilters, cubeSingle, filters} = props;
   const [visible, setVisible] = useState(false);
   const [singleData, setSingleData] = React.useState([]);
 
@@ -50,10 +50,9 @@ export default function MediaViewer(props: MediaViewerProps) {
 
 
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
-
   const cubejsApi = cubejs(options.apiToken, options);
 
   useEffect(() => {

@@ -76,6 +76,7 @@ export type Props = {
   postTransformProps?: PostTransformProps;
   onRenderSuccess?: HandlerFunction;
   onRenderFailure?: HandlerFunction;
+  cubeConfig: { api_token: string, api_url: string };
 };
 
 export default class SuperChartCore extends React.PureComponent<Props, {}> {
@@ -207,6 +208,8 @@ export default class SuperChartCore extends React.PureComponent<Props, {}> {
     if (chartProps === null) {
       return null;
     }
+
+    chartProps.cubeConfig = this.props.cubeConfig;
 
     const containerProps: {
       id?: string;

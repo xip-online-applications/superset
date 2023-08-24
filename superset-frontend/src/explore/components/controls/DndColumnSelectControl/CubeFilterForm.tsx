@@ -22,6 +22,8 @@ import { Button, Form, Input, Select } from 'antd';
 const { Option } = Select;
 import cubejs, { Cube, Meta, TCubeDimension } from "@cubejs-client/core";
 import {CubeFilterSelectOption} from "../../../../views/CRUD/types";
+import {useSelector} from "react-redux";
+import {CubeConfig} from "../../../../types/bootstrapTypes";
 
 export type CubeAdHocFilterPopupProps = {
   closePopover: () => void;
@@ -47,9 +49,13 @@ function CubeFilterForm(props: CubeAdHocFilterPopupProps) {
   const [selectedCube, setSelectedCube] = useState(null as Cube | null);
   const [dimension, setDimension] = useState(null as TCubeDimension | null);
 
+  const cubeConfig = useSelector<any, CubeConfig>(
+    state => state.common.cube_config,
+  );
+
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
   const cubejsApi = cubejs(options.apiToken, options);
 

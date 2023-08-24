@@ -144,14 +144,6 @@ const showSuccessModal = (message: string) => {
     });
 };
 
-
-const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
-};
-const cubejsApi = cubejs(options.apiToken, options);
-
-
 export default function CubeTable(props: CubeTableProps) {
   const {
     height,
@@ -166,8 +158,16 @@ export default function CubeTable(props: CubeTableProps) {
     cubeDetailsCrossFilters,
     cubeDetails,
     actionButtons,
-    actionButtonsDetails
+    actionButtonsDetails,
+    cubeConfig
   } = props;
+
+  const options = {
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
+  };
+  const cubejsApi = cubejs(options.apiToken, options);
+
   const [data, setData] = React.useState([]);
   const [detailData, setDetailData] = React.useState({});
   const [isLoading, setIsLoading] = useState({});
@@ -359,8 +359,6 @@ export default function CubeTable(props: CubeTableProps) {
             showErrorModal('Er is een fout opgetreden bij het uitvoeren van uw actie.');
             return;
           }
-
-          console.log(response);
 
           setActionId(response.data.actionId);
           setSubmitted(false);

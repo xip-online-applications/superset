@@ -47,7 +47,6 @@ export type CubeConfig = {
 
 export type BootstrapCubeConfig = CubeConfig | undefined;
 
-
 export type UserRoles = Record<string, [string, string][]>;
 export interface PermissionsAndRoles {
   permissions: {

@@ -23,6 +23,8 @@ import {
 } from '@superset-ui/core';
 
 export interface MediaViewerStylesProps {
+  height: number;
+  width: number;
 }
 
 //TODO import the proper type from superset-ui
@@ -37,6 +39,7 @@ interface MediaViewerCustomizeProps {
   cubeSingle: Array<any>;
   cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
   filters: Array<any>;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type MediaViewerQueryFormData = QueryFormData &

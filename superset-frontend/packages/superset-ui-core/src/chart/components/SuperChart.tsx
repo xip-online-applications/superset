@@ -31,6 +31,7 @@ import SuperChartCore, { Props as SuperChartCoreProps } from './SuperChartCore';
 import DefaultFallbackComponent from './FallbackComponent';
 import ChartProps, { ChartPropsConfig } from '../models/ChartProps';
 import NoResultsComponent from './NoResultsComponent';
+import { CubejsApi } from '@cubejs-client/core';
 
 const defaultProps = {
   FallbackComponent: DefaultFallbackComponent,
@@ -47,6 +48,7 @@ export type WrapperProps = Dimension & {
 
 export type Props = Omit<SuperChartCoreProps, 'chartProps'> &
   Omit<ChartPropsConfig, 'width' | 'height'> & {
+    cubeConfig: { api_token: string, api_url: string };
     /**
      * Set this to true to disable error boundary built-in in SuperChart
      * and let the error propagate to upper level
@@ -168,6 +170,7 @@ class SuperChart extends React.PureComponent<Props, {}> {
       enableNoResults,
       noResults,
       theme,
+      cubeConfig,
       ...rest
     } = this.props as PropsWithDefault;
 
@@ -180,60 +183,31 @@ class SuperChart extends React.PureComponent<Props, {}> {
     });
 
     let chart;
-    // Render the no results component if the query data is null or empty
-    const noResultQueries =
-      enableNoResults &&
-      (!queriesData ||
-        queriesData
-          .slice(0, this.getQueryCount())
-          .every(
-            ({ data }) => !data || (Array.isArray(data) && data.length === 0),
-          ));
-    if (noResultQueries) {
-      chart = noResults || (
-        <NoResultsComponent
-          id={id}
-          className={className}
-          height={height}
-          width={width}
-        />
-      );
-    } else {
-      const chartWithoutWrapper = (
-        <SuperChartCore
-          ref={this.setRef}
-          id={id}
-          className={className}
-          chartType={chartType}
-          chartProps={chartProps}
-          preTransformProps={preTransformProps}
-          overrideTransformProps={overrideTransformProps}
-          postTransformProps={postTransformProps}
-          onRenderSuccess={onRenderSuccess}
-          onRenderFailure={onRenderFailure}
-        />
-      );
-      chart = Wrapper ? (
-        <Wrapper width={width} height={height}>
-          {chartWithoutWrapper}
-        </Wrapper>
-      ) : (
-        chartWithoutWrapper
-      );
-    }
-    // Include the error boundary by default unless it is specifically disabled.
-    return disableErrorBoundary === true ? (
-      chart
-    ) : (
-      <ErrorBoundary
-        FallbackComponent={(props: FallbackProps) => (
-          <FallbackComponent width={width} height={height} {...props} />
-        )}
-        onError={onErrorBoundary}
-      >
-        {chart}
-      </ErrorBoundary>
+
+    const chartWithoutWrapper = (
+      <SuperChartCore
+        ref={this.setRef}
+        id={id}
+        className={className}
+        chartType={chartType}
+        chartProps={chartProps}
+        preTransformProps={preTransformProps}
+        overrideTransformProps={overrideTransformProps}
+        postTransformProps={postTransformProps}
+        onRenderSuccess={onRenderSuccess}
+        onRenderFailure={onRenderFailure}
+        cubeConfig={cubeConfig}
+      />
     );
+    chart = Wrapper ? (
+      <Wrapper width={width} height={height}>
+        {chartWithoutWrapper}
+      </Wrapper>
+    ) : (
+      chartWithoutWrapper
+    );
+
+    return chart;
   }
 
   render() {

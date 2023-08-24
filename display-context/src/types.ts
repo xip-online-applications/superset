@@ -41,6 +41,7 @@ interface DisplayContextCustomizeProps {
   handlebarsDataTemplate?: string;
   handlebarsEmptyTemplate?: string;
   styleTemplate?: string;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type DisplayContextQueryFormData = QueryFormData &

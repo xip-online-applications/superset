@@ -50,6 +50,7 @@ interface CubeNativeSupersetCustomizeProps {
   filters: Array<any>;
   cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
   cubeMeasures: Array<any>;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type CubeNativeSupersetQueryFormData = QueryFormData &

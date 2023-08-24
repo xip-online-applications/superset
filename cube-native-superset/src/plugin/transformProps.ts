@@ -18,13 +18,11 @@
  */
 import { ChartProps, TimeseriesDataRecord } from '@superset-ui/core';
 
-export default function transformProps(chartProps: ChartProps) {
-  const { width, height, formData, queriesData } = chartProps;
+export default function transformProps(chartProps: ChartProps & { cubeConfig: { api_url: string; api_token: string } }) {
+  const { cubeConfig, width, height, formData, queriesData } = chartProps;
   const { extraFormData, cube, rowLimit, cubeFilters, cubeSingle, cubeCrossFilters, cubeMeasures } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
   const filters = extraFormData.filters || [];
-
-  console.log('chartProps via TransformProps.ts', chartProps);
 
   return {
     width,
@@ -37,5 +35,6 @@ export default function transformProps(chartProps: ChartProps) {
     filters,
     cubeCrossFilters,
     cubeMeasures,
+    cubeConfig,
   };
 }

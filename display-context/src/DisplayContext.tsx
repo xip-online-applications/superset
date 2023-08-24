@@ -31,14 +31,13 @@ const Styles = styled.div<DisplayContextStylesProps>`
 `;
 
 export default function DisplayContext(props: DisplayContextProps) {
-  const { height, width, filters, handlebarsDataTemplate, handlebarsEmptyTemplate, styleTemplate, cube, cubeFilters} = props;
+  const { cubeConfig, height, width, filters, handlebarsDataTemplate, handlebarsEmptyTemplate, styleTemplate, cube, cubeFilters} = props;
   const [data, setData] = React.useState({});
 
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
-
   const cubejsApi = cubejs(options.apiToken, options);
 
   useEffect(() => {

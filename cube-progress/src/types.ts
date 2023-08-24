@@ -50,6 +50,7 @@ interface CubeProgressCustomizeProps {
   cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
   filters: Array<any>;
   cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type CubeProgressQueryFormData = QueryFormData &

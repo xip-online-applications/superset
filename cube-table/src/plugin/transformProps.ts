@@ -18,8 +18,8 @@
  */
 import { ChartProps } from '@superset-ui/core';
 
-export default function transformProps(chartProps: ChartProps) {
-  const { width, height, formData} = chartProps;
+export default function transformProps(chartProps: ChartProps & { cubeConfig: { api_url: string; api_token: string } }) {
+  const { width, height, formData, cubeConfig } = chartProps;
   const {
     extraFormData,
     styleTemplate,
@@ -53,6 +53,7 @@ export default function transformProps(chartProps: ChartProps) {
     cubeDetailsCrossFilters : cubeDetailsCrossFilters ?? [],
     cubeDetails : cubeDetails ?? [],
     actionButtons,
-    actionButtonsDetails
+    actionButtonsDetails,
+    cubeConfig
   };
 }

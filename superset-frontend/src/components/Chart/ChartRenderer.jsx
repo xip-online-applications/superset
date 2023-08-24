@@ -40,6 +40,7 @@ const propTypes = {
   datasource: PropTypes.object,
   initialValues: PropTypes.object,
   formData: PropTypes.object.isRequired,
+  cubeConfig: PropTypes.object.isRequired,
   latestQueryFormData: PropTypes.object,
   labelColors: PropTypes.object,
   sharedLabelColors: PropTypes.object,
@@ -264,6 +265,7 @@ class ChartRenderer extends React.Component {
       formData,
       latestQueryFormData,
       postTransformProps,
+      cubeConfig,
     } = this.props;
 
     const currentFormData =
@@ -352,6 +354,7 @@ class ChartRenderer extends React.Component {
             datasource={datasource}
             initialValues={initialValues}
             formData={currentFormData}
+            cubeConfig={cubeConfig}
             ownState={ownState}
             filterState={filterState}
             hooks={this.hooks}

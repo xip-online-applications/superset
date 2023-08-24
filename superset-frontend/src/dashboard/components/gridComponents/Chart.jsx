@@ -19,22 +19,16 @@
 import cx from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { styled, t, logging } from '@superset-ui/core';
+import { styled } from '@superset-ui/core';
 import { isEqual } from 'lodash';
 import { withRouter } from 'react-router-dom';
 
-import { exportChart, mountExploreUrl } from 'src/explore/exploreUtils';
 import ChartContainer from 'src/components/Chart/ChartContainer';
 import {
   LOG_ACTIONS_CHANGE_DASHBOARD_FILTER,
   LOG_ACTIONS_EXPLORE_DASHBOARD_CHART,
-  LOG_ACTIONS_EXPORT_CSV_DASHBOARD_CHART,
-  LOG_ACTIONS_EXPORT_XLSX_DASHBOARD_CHART,
-  LOG_ACTIONS_FORCE_REFRESH_CHART,
 } from 'src/logger/LogUtils';
 import { areObjectsEqual } from 'src/reduxUtils';
-import { postFormData } from 'src/explore/exploreUtils/formData';
-import { URL_PARAMS } from 'src/constants';
 
 import SliceHeader from '../SliceHeader';
 import MissingChart from '../MissingChart';
@@ -57,6 +51,7 @@ const propTypes = {
   // from redux
   chart: chartPropShape.isRequired,
   formData: PropTypes.object.isRequired,
+  cubeConfig: PropTypes.object.isRequired,
   labelColors: PropTypes.object,
   sharedLabelColors: PropTypes.object,
   datasource: PropTypes.object,
@@ -324,6 +319,7 @@ class Chart extends React.Component {
       isInView,
       emitCrossFilters,
       logEvent,
+      cubeConfig,
     } = this.props;
 
     const { width } = this.state;
@@ -332,8 +328,6 @@ class Chart extends React.Component {
     if (!chart || !slice) {
       return <MissingChart height={this.getChartHeight()} />;
     }
-
-    console.log(chart);
 
     const { queriesResponse, chartUpdateEndTime, chartStatus } = chart;
     const isLoading = chartStatus === 'loading';
@@ -446,6 +440,7 @@ class Chart extends React.Component {
             datasetsStatus={datasetsStatus}
             isInView={isInView}
             emitCrossFilters={emitCrossFilters}
+            cubeConfig={cubeConfig}
           />
         </ChartWrapper>
       </SliceContainer>

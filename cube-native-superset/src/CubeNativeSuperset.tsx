@@ -40,18 +40,18 @@ const Styles = styled.div<CubeNativeSupersetStylesProps>`
 `;
 
 export default function CubeNativeSuperset(props: CubeNativeSupersetProps) {
-  const { height, width , cube, rowLimit, cubeFilters, cubeSingle, filters, cubeCrossFilters, cubeMeasures} = props;
+  const { cubeConfig, height, width , cube, rowLimit, cubeFilters, cubeSingle, filters, cubeCrossFilters, cubeMeasures} = props;
   const rootElem = createRef<HTMLDivElement>();
 
   const [data, setData] = React.useState([]);
   const [singleData, setSingleData] = React.useState([]);
   const [measureData, setMeasureData] = React.useState([]);
 
-  const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
-  };
 
+  const options = {
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
+  };
   const cubejsApi = cubejs(options.apiToken, options);
 
   const transformFilters = (nativeFilters: Array<CubeFilterSelectOptionDuplicate>, crossFilters: Array<CubeCrossFilterSelectOptionDuplicate>): Array<CubeFilterSelectOptionDuplicate> => {

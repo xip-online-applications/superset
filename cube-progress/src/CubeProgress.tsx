@@ -17,7 +17,7 @@
  * under the License.
  */
 import React, { createRef, useEffect } from 'react';
-import cubejs from '@cubejs-client/core';
+import cubejs, { CubejsApi } from '@cubejs-client/core';
 import { styled } from '@superset-ui/core';
 import {
   CubeCrossFilterSelectOptionDuplicate,
@@ -25,7 +25,7 @@ import {
   CubeProgressProps,
   CubeProgressStylesProps,
 } from './types';
-import { Progress, Space } from 'antd';
+import { Progress } from 'antd';
 
 const Styles = styled.div<CubeProgressStylesProps>`
   padding: ${({ theme }) => theme.gridUnit * 4}px;
@@ -45,6 +45,7 @@ export default function CubeProgress(props: CubeProgressProps) {
     totalValue,
     cubeCrossFilters,
     layout,
+    cubeConfig,
   } = props;
 
   const [total, setTotal] = React.useState(0);
@@ -54,10 +55,9 @@ export default function CubeProgress(props: CubeProgressProps) {
   const rootElem = createRef<HTMLDivElement>();
 
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
-
   const cubejsApi = cubejs(options.apiToken, options);
 
   const transformFilters = (

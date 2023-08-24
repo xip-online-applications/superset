@@ -18,8 +18,8 @@
  */
 import { ChartProps } from '@superset-ui/core';
 
-export default function transformProps(chartProps: ChartProps) {
-  const { width, height, formData} = chartProps;
+export default function transformProps(chartProps: ChartProps & { cubeConfig: { api_url: string; api_token: string } }) {
+  const { width, height, formData, cubeConfig} = chartProps;
   const { extraFormData, totalValue, values, cubeFilters, cubeCrossFilters, progressType, layout } = formData;
   const filters = extraFormData.filters || [];
 
@@ -34,5 +34,6 @@ export default function transformProps(chartProps: ChartProps) {
     cubeFilters: cubeFilters ?? [],
     cubeCrossFilters: cubeCrossFilters ?? [],
     layout,
+    cubeConfig
   };
 }

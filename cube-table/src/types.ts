@@ -58,6 +58,7 @@ interface CubeTableCustomizeProps {
   tableSize: 'large' | 'middle' | 'small';
   actionButtons: Array<ActionOption>;
   actionButtonsDetails: Array<ActionOption>;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type CubeTableQueryFormData = QueryFormData &
