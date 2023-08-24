@@ -327,7 +327,7 @@ export default function CubeTable(props: CubeTableProps) {
             size={'small'}
         />
     );
-  }, [detailData, isLoading]);
+  }, [detailData, isLoading, cubeDetailsCrossFilters]);
 
   useEffect(() => {
     if (cubeDetails.length === 0 || cubeDetailsCrossFilters.length === 0) {
