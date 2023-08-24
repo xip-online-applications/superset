@@ -55,7 +55,6 @@ const controlMap = {
   ColorSchemeControl,
   DatasourceControl,
   DateFilterControl,
-  DndColumnSelectControl,
   FixedOrMetricControl,
   HiddenControl,
   SelectAsyncControl,
