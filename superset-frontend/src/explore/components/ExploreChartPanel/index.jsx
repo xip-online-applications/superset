@@ -38,6 +38,7 @@ import { getChartRequiredFieldsMissingMessage } from 'src/utils/getChartRequired
 import { ChartPills } from '../ChartPills';
 import { ExploreAlert } from '../ExploreAlert';
 import useResizeDetectorByObserver from './useResizeDetectorByObserver';
+import {useSelector} from "react-redux";
 
 const propTypes = {
   actions: PropTypes.object.isRequired,
@@ -147,6 +148,8 @@ const ExploreChartPanel = ({
       : getItem(LocalStorageKeys.is_datapanel_open, false),
   );
 
+  const cubeConfig = useSelector(state => state.common.cube_config);
+
   const showAlertBanner =
     !chartAlert &&
     chartIsStale &&
@@ -220,6 +223,7 @@ const ExploreChartPanel = ({
             timeout={timeout}
             triggerQuery={chart.triggerQuery}
             vizType={vizType}
+            cubeConfig={cubeConfig}
           />
         )}
       </div>

@@ -21,7 +21,6 @@ import {
   css,
   QueryFormData,
   styled,
-  t,
 } from '@superset-ui/core';
 import {ExploreActions} from "../../actions/exploreActions";
 import cubejs, { Meta, Cube } from "@cubejs-client/core";
