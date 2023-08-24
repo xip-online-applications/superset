@@ -53,7 +53,6 @@ export default function LoggedInDashboardCard(props: LoggedInDashboardCardProps)
     endpoint: '/api/v1/me/',
   });
 
-
   useEffect(() => {
     getMe().then((user) => setUser(user.result));
   }, []);

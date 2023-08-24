@@ -16,12 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   css,
-  DatasourceType,
-  FeatureFlag,
-  Metric,
   QueryFormData,
   styled,
   t,
@@ -29,8 +26,8 @@ import {
 import {ExploreActions} from "../../actions/exploreActions";
 import cubejs, { Meta, Cube } from "@cubejs-client/core";
 import CubePanel from "./CubePanel";
-import {connect, useSelector} from "react-redux";
-import {CubeConfig, UserWithPermissionsAndRoles} from "../../../types/bootstrapTypes";
+import {connect} from "react-redux";
+import {CubeConfig} from "../../../types/bootstrapTypes";
 
 export interface Props {
   actions: Partial<ExploreActions> & Pick<ExploreActions, 'setControlValue'>;

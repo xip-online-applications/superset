@@ -40,11 +40,6 @@ import MetricsControl from './MetricControl/MetricsControl';
 import AdhocFilterControl from './FilterControl/AdhocFilterControl';
 import FilterBoxItemControl from './FilterBoxItemControl';
 import ConditionalFormattingControl from './ConditionalFormattingControl';
-import DndColumnSelectControl, {
-  DndColumnSelect,
-  DndFilterSelect,
-  DndMetricSelect,
-} from './DndColumnSelectControl';
 import XAxisSortControl from './XAxisSortControl';
 import {DndCubeSelect} from "./DndColumnSelectControl/DndCubeSelect";
 import CubeAdHocFilterControl from "./DndColumnSelectControl/CubeAdHocFilterControl";
@@ -61,9 +56,6 @@ const controlMap = {
   DatasourceControl,
   DateFilterControl,
   DndColumnSelectControl,
-  DndColumnSelect,
-  DndFilterSelect,
-  DndMetricSelect,
   FixedOrMetricControl,
   HiddenControl,
   SelectAsyncControl,

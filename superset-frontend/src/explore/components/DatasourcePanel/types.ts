@@ -16,14 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { ChartProps, Datasource } from '@superset-ui/core';
+import { ColumnMeta, Metric } from '@superset-ui/chart-controls';
+import { DndItemType } from '../DndItemType';
 
-export interface FilterConfig {
-  column: string;
-  label: string;
+export type DndItemValue = ColumnMeta | Metric;
+
+export interface DatasourcePanelDndItem {
+  value: DndItemValue;
+  type: DndItemType;
 }
 
-export type FilterBoxChartProps = ChartProps & {
-  datasource?: Datasource;
-  formData: ChartProps['formData'] & { filterConfigs: FilterConfig[] };
-};
+export function isDatasourcePanelDndItem(
+  item: any,
+): item is DatasourcePanelDndItem {
+  return item?.value && item?.type;
+}
+
+export function isSavedMetric(item: any): item is Metric {
+  return item?.metric_name;
+}

@@ -64,7 +64,6 @@ import {
   DrillByBreadcrumb,
   useDrillByBreadcrumbs,
 } from './useDrillByBreadcrumbs';
-import { useResultsTableView } from './useResultsTableView';
 
 const DEFAULT_ADHOC_FILTER_FIELD_NAME = 'adhoc_filters';
 interface ModalFooterProps {
@@ -186,11 +185,6 @@ export default function DrillByModal({
 
   const { displayModeToggle, drillByDisplayMode } = useDisplayModeToggle();
   const [chartDataResult, setChartDataResult] = useState<QueryData[]>();
-
-  const resultsTable = useResultsTableView(
-    chartDataResult,
-    formData.datasource,
-  );
 
   const [currentFormData, setCurrentFormData] = useState(formData);
   const [usedGroupbyColumns, setUsedGroupbyColumns] = useState<Column[]>(
@@ -459,9 +453,6 @@ export default function DrillByModal({
             inContextMenu={inContextMenu}
           />
         )}
-        {drillByDisplayMode === DrillByType.Table &&
-          chartDataResult &&
-          resultsTable}
         {contextMenu}
       </div>
     </Modal>
