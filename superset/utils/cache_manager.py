@@ -21,8 +21,6 @@ from flask import Flask
 from flask_caching import Cache
 from markupsafe import Markup
 
-from superset.utils.core import DatasourceType
-
 logger = logging.getLogger(__name__)
 
 CACHE_IMPORT_PATH = "superset.extensions.metastore_cache.SupersetMetastoreCache"
@@ -30,23 +28,7 @@ CACHE_IMPORT_PATH = "superset.extensions.metastore_cache.SupersetMetastoreCache"
 
 class ExploreFormDataCache(Cache):
     def get(self, *args: Any, **kwargs: Any) -> Optional[Union[str, Markup]]:
-        cache = self.cache.get(*args, **kwargs)
-
-        if not cache:
-            return None
-
-        # rename data keys for existing cache based on new TemporaryExploreState model
-        if isinstance(cache, dict):
-            cache = {
-                ("datasource_id" if key == "dataset_id" else key): value
-                for (key, value) in cache.items()
-            }
-            # add default datasource_type if it doesn't exist
-            # temporarily defaulting to table until sqlatables are deprecated
-            if "datasource_type" not in cache:
-                cache["datasource_type"] = DatasourceType.TABLE
-
-        return cache
+        return self.cache.get(*args, **kwargs)
 
 
 class CacheManager:

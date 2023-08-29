@@ -18,7 +18,6 @@
  */
 import memoizeOne from 'memoize-one';
 import {
-  DatasourceType,
   getChartControlPanelRegistry,
 } from '@superset-ui/core';
 import {
@@ -30,7 +29,7 @@ import {
 import * as SECTIONS from 'src/explore/controlPanels/sections';
 
 const getMemoizedSectionsToRender = memoizeOne(
-  (datasourceType: DatasourceType, controlPanelConfig: ControlPanelConfig) => {
+  (controlPanelConfig: ControlPanelConfig) => {
     const {
       sectionOverrides = {},
       controlOverrides,
@@ -54,12 +53,6 @@ const getMemoizedSectionsToRender = memoizeOne(
 
     const { datasourceAndVizType } = sections;
 
-    // list of datasource-specific controls that should be removed if the datasource is a specific type
-    const filterControlsForTypes = [DatasourceType.Query, DatasourceType.Table];
-    const invalidControls = filterControlsForTypes.includes(datasourceType)
-      ? ['granularity']
-      : ['granularity_sqla', 'time_grain_sqla'];
-
     return [datasourceAndVizType]
       .concat(controlPanelSections.filter(isControlPanelSectionConfig))
       .map(section => {
@@ -68,13 +61,7 @@ const getMemoizedSectionsToRender = memoizeOne(
           ...section,
           controlSetRows:
             controlSetRows?.map(row =>
-              row
-                .filter(
-                  control =>
-                    typeof control !== 'string' ||
-                    !invalidControls.includes(control),
-                )
-                .map(item => expandControlConfig(item, controlOverrides)),
+              row.map(item => expandControlConfig(item, controlOverrides)),
             ) || [],
         };
       });
@@ -84,12 +71,9 @@ const getMemoizedSectionsToRender = memoizeOne(
 /**
  * Get the clean and processed control panel sections
  */
-export function getSectionsToRender(
-  vizType: string,
-  datasourceType: DatasourceType,
-) {
+export function getSectionsToRender(vizType: string) {
   const controlPanelConfig =
-    // TODO: update `chartControlPanelRegistry` type to use ControlPanelConfig
     (getChartControlPanelRegistry().get(vizType) as ControlPanelConfig) || {};
-  return getMemoizedSectionsToRender(datasourceType, controlPanelConfig);
+
+  return getMemoizedSectionsToRender(controlPanelConfig);
 }

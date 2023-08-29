@@ -33,6 +33,7 @@ x-superset-volumes: &superset-volumes
   - ./media-viewer:/app/media-viewer
   - ./cube-progress:/app/cube-progress
   - ./cube-burndown-chart:/app/cube-burndown-chart
+  - ./cube-native-superset:/app/cube-native-superset
 
 version: "3.7"
 services:
@@ -56,7 +57,9 @@ services:
       - db_home:/var/lib/postgresql/data
 
   superset:
-    env_file: docker/.env
+    env_file:
+      - docker/.env
+      - docker/.xip.env
     image: *superset-image
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app"]
@@ -117,51 +120,6 @@ services:
     env_file: docker/.env
     depends_on: *superset-depends-on
     volumes: *superset-volumes
-
-  superset-worker:
-    image: *superset-image
-    container_name: superset_worker
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
-    env_file: docker/.env
-    restart: unless-stopped
-    depends_on: *superset-depends-on
-    user: *superset-user
-    volumes: *superset-volumes
-    healthcheck:
-      test: ["CMD-SHELL", "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME"]
-    # Bump memory limit if processing selenium / thumbnails on superset-worker
-    # mem_limit: 2038m
-    # mem_reservation: 128M
-
-  superset-worker-beat:
-    image: *superset-image
-    container_name: superset_worker_beat
-    command: ["/app/docker/docker-bootstrap.sh", "beat"]
-    env_file: docker/.env
-    restart: unless-stopped
-    depends_on: *superset-depends-on
-    user: *superset-user
-    volumes: *superset-volumes
-    healthcheck:
-      disable: true
-
-  superset-tests-worker:
-    image: *superset-image
-    container_name: superset_tests_worker
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
-    env_file: docker/.env
-    environment:
-      DATABASE_HOST: localhost
-      DATABASE_DB: test
-      REDIS_CELERY_DB: 2
-      REDIS_RESULTS_DB: 3
-      REDIS_HOST: localhost
-    network_mode: host
-    depends_on: *superset-depends-on
-    user: *superset-user
-    volumes: *superset-volumes
-    healthcheck:
-      test: ["CMD-SHELL", "celery inspect ping -A superset.tasks.celery_app:app -d celery@$$HOSTNAME"]
 
 volumes:
   superset_home:

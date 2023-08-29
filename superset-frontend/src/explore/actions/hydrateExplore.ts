@@ -29,17 +29,12 @@ import { Dispatch } from 'redux';
 import {
   ensureIsArray,
   getCategoricalSchemeRegistry,
-  getColumnLabel,
   getSequentialSchemeRegistry,
-  hasGenericChartAxes,
-  NO_TIME_RANGE,
-  QueryFormColumn,
 } from '@superset-ui/core';
 import {
   getFormDataFromControls,
   applyMapStateToPropsToControl,
 } from 'src/explore/controlUtils';
-import { getDatasourceUid } from 'src/utils/getDatasourceUid';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { URL_PARAMS } from 'src/constants';
 import { findPermission } from 'src/utils/findPermission';
@@ -54,12 +49,11 @@ export const hydrateExplore =
   ({
     form_data,
     slice,
-    dataset,
     metadata,
     saveAction = null,
   }: ExplorePageInitialData) =>
   (dispatch: Dispatch, getState: () => ExplorePageState) => {
-    const { user, datasources, charts, sliceEntities, common, explore } =
+    const { user, charts, sliceEntities, common, explore } =
       getState();
 
     const sliceId = getUrlParam(URL_PARAMS.sliceId);
@@ -72,37 +66,14 @@ export const hydrateExplore =
       initialFormData.viz_type =
         getUrlParam(URL_PARAMS.vizType) || defaultVizType;
     }
-    if (!initialFormData.time_range) {
-      initialFormData.time_range =
-        common?.conf?.DEFAULT_TIME_FILTER || NO_TIME_RANGE;
-    }
-    if (
-      hasGenericChartAxes &&
-      initialFormData.include_time &&
-      initialFormData.granularity_sqla &&
-      !initialFormData.groupby?.some(
-        (col: QueryFormColumn) =>
-          getColumnLabel(col) ===
-          getColumnLabel(initialFormData.granularity_sqla!),
-      )
-    ) {
-      initialFormData.groupby = [
-        initialFormData.granularity_sqla,
-        ...ensureIsArray(initialFormData.groupby),
-      ];
-      initialFormData.granularity_sqla = undefined;
-    }
 
     if (dashboardId) {
       initialFormData.dashboardId = dashboardId;
     }
 
-    const initialDatasource = dataset;
-
     const initialExploreState = {
       form_data: initialFormData,
       slice: initialSlice,
-      datasource: initialDatasource,
     };
     const initialControls = getControlsState(
       initialExploreState,
@@ -145,8 +116,6 @@ export const hydrateExplore =
       isDatasourceMetaLoading: false,
       isStarred: false,
       triggerRender: false,
-      // duplicate datasource in exploreState - it's needed by getControlsState
-      datasource: initialDatasource,
       // Initial control state will skip `control.mapStateToProps`
       // because `bootstrapData.controls` is undefined.
       controls: initialControls,
@@ -195,10 +164,6 @@ export const hydrateExplore =
         charts: {
           ...charts,
           [chartKey]: chart,
-        },
-        datasources: {
-          ...datasources,
-          [getDatasourceUid(initialDatasource)]: initialDatasource,
         },
         saveModal: {
           dashboards: [],

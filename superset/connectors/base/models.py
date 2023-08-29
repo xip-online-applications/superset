@@ -157,17 +157,6 @@ class BaseDatasource(
     def is_virtual(self) -> bool:
         return self.kind == DatasourceKind.VIRTUAL
 
-    @declared_attr
-    def slices(self) -> RelationshipProperty:
-        return relationship(
-            "Slice",
-            overlaps="table",
-            primaryjoin=lambda: and_(
-                foreign(Slice.datasource_id) == self.id,
-                foreign(Slice.datasource_type) == self.type,
-            ),
-        )
-
     columns: list[BaseColumn] = []
     metrics: list[BaseMetric] = []
 

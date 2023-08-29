@@ -40,6 +40,13 @@ export type User = {
   username: string;
 };
 
+export type CubeConfig = {
+  api_token: string,
+  api_url: string,
+};
+
+export type BootstrapCubeConfig = CubeConfig | undefined;
+
 export type UserRoles = Record<string, [string, string][]>;
 export interface PermissionsAndRoles {
   permissions: {
@@ -152,6 +159,7 @@ export interface CommonBootstrapData {
   theme_overrides: JsonObject;
   menu_data: MenuData;
   d3_format: Partial<FormatLocaleDefinition>;
+  cube_config?: BootstrapCubeConfig;
 }
 
 export interface BootstrapData {

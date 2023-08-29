@@ -27,27 +27,143 @@ const config: ControlPanelConfig = {
   controlPanelSections: [
     sections.legacyRegularTime,
     {
-      label: t('DATA'),
+      label: t('Data'),
       expanded: true,
       controlSetRows: [
         [
           {
-            name: 'all_columns',
+            name: 'cube',
             config: {
-              ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Required Columns in the datafields'),
-              validators: [validateNonEmpty],
-            },
+              type: 'DndCubeSelect',
+              label: t('Cube Columns'),
+              description: t('Cube Columns to display'),
+              default: [validateNonEmpty],
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube-filters',
+            config: {
+              type: 'CubeAdHocFilterControl',
+              label: t('Cube Filters'),
+              description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube-cross-filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Cube Cross Filters'),
+              description: t('Cube Filters that match across cubes'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'action_buttons',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons'),
+              description: t('ActtionButtons to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'row_limit',
+            config: sharedControls.row_limit,
           },
         ],
-        ['adhoc_filters'],
       ],
     },
     {
-      label: t('TODO FOR BUTTONS!'),
+      label: t('Details table'),
+      controlSetRows: [
+        [
+          {
+            name: 'cube_details_cross_filters',
+            config: {
+              type: 'CubeCrossFilterControl',
+              label: t('Lookup values'),
+              description: t('Values to match the parent table with the details table'),
+              default: [],
+              multi: false,
+            }
+          }
+        ],
+        [
+          {
+            name: 'cube_details',
+            config: {
+              type: 'DndCubeSelect',
+              label: t('Cube Columns'),
+              description: t('Cube Columns to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'row_limit_details',
+            config: sharedControls.row_limit,
+          },
+        ],
+      ],
+    },
+    {
+      label: t('Geaffanceerd'),
+      controlSetRows: [
+        [
+          {
+            name: 'action_buttons',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons'),
+              description: t('ActtionButtons to display'),
+              default: [],
+            }
+          }
+        ],
+        [
+          {
+            name: 'action_buttons_details',
+            config: {
+              type: 'ActionButtonControl',
+              label: t('Action Buttons Details'),
+              description: t('ActtionButtons in Detail table to display'),
+              default: [],
+            }
+          }
+        ],
+      ],
+    },
+    {
+      label: t('Overige instellingen'),
       expanded: true,
       controlSetRows: [
+        [
+          {
+            name: 'table_size',
+            config: {
+              type: 'SelectControl',
+              label: t('Table Size'),
+              default: 'large',
+              choices: [
+                ['large', 'Groot'],
+                ['middle', 'Medium'],
+                ['small', 'Klein'],
+              ],
+              renderTrigger: true,
+              description: t('The size of your header font'),
+            },
+          },
+        ],
         [
           {
             name: 'action_config',
@@ -70,20 +186,6 @@ const config: ControlPanelConfig = {
               default: true,
               description: t(
                 'Makes the dashboard wait for a response from the form'
-              ),
-            },
-          },
-        ],
-        [
-          {
-            name: 'cube_query',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Cube Query'),
-              renderTrigger: true,
-              default: false,
-              description: t(
-                'Uses the native cube query instead of the regular query'
               ),
             },
           },

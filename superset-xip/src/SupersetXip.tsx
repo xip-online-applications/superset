@@ -167,7 +167,9 @@ export default function SupersetXip(props: SupersetXipProps) {
 
       const column = field.field_options.find((option) => option.filter === 'true').dimentions;
       const value = JSON.parse(formData[field.field_id])[field.field_dataset + '.' + column];
-      filters.push(getCrossFilterDataMask(column, value, field.field_dataset));
+      const filter = getCrossFilterDataMask(column, value, field.field_dataset);
+      console.log(filter);
+      filters.push(filter);
     });
 
     setDataMask(
@@ -211,12 +213,12 @@ export default function SupersetXip(props: SupersetXipProps) {
   );
 }
 
-const getCrossFilterDataMask = (column: string, value: string, dataset?: string) => {
+const getCrossFilterDataMask = (column: string, value: string, cube?: string) => {
   return {
-          col: column,
-          op: 'IN',
+          col: cube + '.' + column,
+          op: 'equals',
           val: [value],
-          dataset: dataset,
+          cube: cube,
         }
 };
 

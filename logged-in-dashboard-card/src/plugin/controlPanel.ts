@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { t } from '@superset-ui/core';
 import {
   ControlPanelConfig,
   sections,
@@ -26,26 +25,6 @@ const config: ControlPanelConfig = {
   // For control input types, see: superset-frontend/src/explore/components/controls/index.js
   controlPanelSections: [
     sections.legacyRegularTime,
-    {
-      label: t('Hello Controls!'),
-      expanded: true,
-      controlSetRows: [
-        [
-          {
-            name: 'cube_query',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Cube Query'),
-              renderTrigger: true,
-              default: true,
-              description: t(
-                'Uses the native cube query instead of the regular query'
-              ),
-            },
-          },
-        ],
-      ],
-    },
   ],
 };
 

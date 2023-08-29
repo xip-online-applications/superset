@@ -26,12 +26,39 @@ export interface CubeTableStylesProps {
   width: number;
 }
 
+//TODO import the proper type from superset-ui
+export type CubeFilterSelectOptionDuplicate = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
+export type CubeCrossFilterSelectOptionDuplicate = {
+  cubeLeft: string;
+  colLeft: string;
+  cubeRight: string;
+  colRight: string;
+}
+
+export type ActionOption = {
+  actionType: string;
+  actionLabel: string;
+}
+
 interface CubeTableCustomizeProps {
-  dataset: string;
-  dimensions: Array<string>;
   filters: Array<any>;
   blockingAction: boolean;
-  actions: Array<any>;
+  cube: Array<any>;
+  rowLimit: number;
+  cubeFilters: Array<CubeFilterSelectOptionDuplicate>;
+  cubeCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeDetailsCrossFilters: Array<CubeCrossFilterSelectOptionDuplicate>;
+  cubeDetails: Array<any>;
+  tableSize: 'large' | 'middle' | 'small';
+  actionButtons: Array<ActionOption>;
+  actionButtonsDetails: Array<ActionOption>;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type CubeTableQueryFormData = QueryFormData &

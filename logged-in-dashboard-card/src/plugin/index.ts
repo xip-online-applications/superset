@@ -29,6 +29,7 @@ export default class LoggedInDashboardCard extends ChartPlugin {
       description: t('Logged In Dashboard Card'),
       name: t('Logged In Dashboard Card'),
       thumbnail,
+      tags: ['xip']
     });
 
     super({

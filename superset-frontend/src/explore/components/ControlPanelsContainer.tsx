@@ -19,12 +19,10 @@
 /* eslint camelcase: 0 */
 import React, {
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from 'react';
 import {
   ensureIsArray,
@@ -32,23 +30,18 @@ import {
   styled,
   getChartControlPanelRegistry,
   QueryFormData,
-  DatasourceType,
   css,
   SupersetTheme,
   useTheme,
   isDefined,
   JsonValue,
-  NO_TIME_RANGE,
   usePrevious,
 } from '@superset-ui/core';
 import {
   ControlPanelSectionConfig,
   ControlState,
   CustomControlItem,
-  Dataset,
   ExpandedControlItem,
-  isTemporalColumn,
-  sections,
 } from '@superset-ui/chart-controls';
 import { useSelector } from 'react-redux';
 import { rgba } from 'emotion-rgba';
@@ -58,7 +51,6 @@ import Collapse from 'src/components/Collapse';
 import Tabs from 'src/components/Tabs';
 import { PluginContext } from 'src/components/DynamicPlugins';
 import Loading from 'src/components/Loading';
-import Modal from 'src/components/Modal';
 
 import { getSectionsToRender } from 'src/explore/controlUtils';
 import { ExploreActions } from 'src/explore/actions/exploreActions';
@@ -67,21 +59,18 @@ import { Tooltip } from 'src/components/Tooltip';
 import Icons from 'src/components/Icons';
 import ControlRow from './ControlRow';
 import Control from './Control';
-import { ExploreAlert } from './ExploreAlert';
 import { RunQueryButton } from './RunQueryButton';
 import { Operators } from '../constants';
-import { CLAUSES } from './controls/FilterControl/types';
 
-const { confirm } = Modal;
 
 export type ControlPanelsContainerProps = {
   exploreState: ExplorePageState['explore'];
   actions: ExploreActions;
-  datasource_type: DatasourceType;
+  // datasource_type: DatasourceType;
   chart: ChartState;
   controls: Record<string, ControlState>;
   form_data: QueryFormData;
-  isDatasourceMetaLoading: boolean;
+  // isDatasourceMetaLoading: boolean;
   errorMessage: ReactNode;
   onQuery: () => void;
   onStop: () => void;
@@ -189,36 +178,27 @@ const ControlPanelsTabs = styled(Tabs)`
   `}
 `;
 
-const isTimeSection = (section: ControlPanelSectionConfig): boolean =>
-  !!section.label &&
-  (sections.legacyRegularTime.label === section.label ||
-    sections.legacyTimeseriesTime.label === section.label);
-
-const hasTimeColumn = (datasource: Dataset): boolean =>
-  datasource?.columns?.some(c => c.is_dttm);
 const sectionsToExpand = (
   sections: ControlPanelSectionConfig[],
-  datasource: Dataset,
 ): string[] =>
   // avoid expanding time section if datasource doesn't include time column
   sections.reduce(
-    (acc, section) =>
-      (section.expanded || !section.label) &&
-      (!isTimeSection(section) || hasTimeColumn(datasource))
-        ? [...acc, String(section.label)]
-        : acc,
+    (acc, section) => [...acc, String(section.label)],
     [] as string[],
   );
 
 function getState(
   vizType: string,
-  datasource: Dataset,
-  datasourceType: DatasourceType,
+  // datasource: Dataset,
+  // datasourceType: DatasourceType,
 ) {
   const querySections: ControlPanelSectionConfig[] = [];
   const customizeSections: ControlPanelSectionConfig[] = [];
 
-  getSectionsToRender(vizType, datasourceType).forEach(section => {
+  getSectionsToRender(
+      vizType,
+      // datasourceType
+  ).forEach(section => {
     // if at least one control in the section is not `renderTrigger`
     // or asks to be displayed at the Data tab
     if (
@@ -242,11 +222,11 @@ function getState(
   });
   const expandedQuerySections: string[] = sectionsToExpand(
     querySections,
-    datasource,
+    // datasource,
   );
   const expandedCustomizeSections: string[] = sectionsToExpand(
     customizeSections,
-    datasource,
+    // datasource,
   );
   return {
     expandedQuerySections,
@@ -272,10 +252,7 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
   const pluginContext = useContext(PluginContext);
 
   const prevState = usePrevious(props.exploreState);
-  const prevDatasource = usePrevious(props.exploreState.datasource);
   const prevChartStatus = usePrevious(props.chart.chartStatus);
-
-  const [showDatasourceAlert, setShowDatasourceAlert] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -284,57 +261,8 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
     string[] | undefined
   >(state => state.explore.controlsTransferred);
 
-  const defaultTimeFilter = useSelector<ExplorePageState>(
-    state => state.common?.conf?.DEFAULT_TIME_FILTER,
-  );
 
-  const { form_data, actions } = props;
-  const { setControlValue } = actions;
-  const { x_axis, adhoc_filters } = form_data;
-
-  const previousXAxis = usePrevious(x_axis);
-
-  useEffect(() => {
-    if (
-      x_axis &&
-      x_axis !== previousXAxis &&
-      isTemporalColumn(x_axis, props.exploreState.datasource)
-    ) {
-      const noFilter = !adhoc_filters?.find(
-        filter =>
-          filter.expressionType === 'SIMPLE' &&
-          filter.operator === Operators.TEMPORAL_RANGE &&
-          filter.subject === x_axis,
-      );
-      if (noFilter) {
-        confirm({
-          title: t('The X-axis is not on the filters list'),
-          content:
-            t(`The X-axis is not on the filters list which will prevent it from being used in
-            time range filters in dashboards. Would you like to add it to the filters list?`),
-          onOk: () => {
-            setControlValue('adhoc_filters', [
-              ...(adhoc_filters || []),
-              {
-                clause: CLAUSES.WHERE,
-                subject: x_axis,
-                operator: Operators.TEMPORAL_RANGE,
-                comparator: defaultTimeFilter || NO_TIME_RANGE,
-                expressionType: 'SIMPLE',
-              },
-            ]);
-          },
-        });
-      }
-    }
-  }, [
-    x_axis,
-    adhoc_filters,
-    setControlValue,
-    defaultTimeFilter,
-    previousXAxis,
-    props.exploreState.datasource,
-  ]);
+  const { form_data } = props;
 
   useEffect(() => {
     let shouldUpdateControls = false;
@@ -381,22 +309,6 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
     props.controls,
   ]);
 
-  useEffect(() => {
-    if (
-      prevDatasource &&
-      prevDatasource.type !== DatasourceType.Query &&
-      (props.exploreState.datasource?.id !== prevDatasource.id ||
-        props.exploreState.datasource?.type !== prevDatasource.type)
-    ) {
-      setShowDatasourceAlert(true);
-      containerRef.current?.scrollTo(0, 0);
-    }
-  }, [
-    props.exploreState.datasource?.id,
-    props.exploreState.datasource?.type,
-    prevDatasource,
-  ]);
-
   const {
     expandedQuerySections,
     expandedCustomizeSections,
@@ -404,31 +316,9 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
     customizeSections,
   } = useMemo(
     () =>
-      getState(
-        form_data.viz_type,
-        props.exploreState.datasource,
-        props.datasource_type,
-      ),
-    [props.exploreState.datasource, form_data.viz_type, props.datasource_type],
+      getState(form_data.viz_type),
+    [form_data.viz_type],
   );
-
-  const resetTransferredControls = useCallback(() => {
-    ensureIsArray(props.exploreState.controlsTransferred).forEach(controlName =>
-      props.actions.setControlValue(
-        controlName,
-        props.controls[controlName].default,
-      ),
-    );
-  }, [props.actions, props.exploreState.controlsTransferred, props.controls]);
-
-  const handleClearFormClick = useCallback(() => {
-    resetTransferredControls();
-    setShowDatasourceAlert(false);
-  }, [resetTransferredControls]);
-
-  const handleContinueClick = useCallback(() => {
-    setShowDatasourceAlert(false);
-  }, []);
 
   const shouldRecalculateControlState = ({
     name,
@@ -656,37 +546,6 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
     );
   };
 
-  const hasControlsTransferred =
-    ensureIsArray(props.exploreState.controlsTransferred).length > 0;
-
-  const DatasourceAlert = useCallback(
-    () =>
-      hasControlsTransferred ? (
-        <ExploreAlert
-          title={t('Keep control settings?')}
-          bodyText={t(
-            "You've changed datasets. Any controls with data (columns, metrics) that match this new dataset have been retained.",
-          )}
-          primaryButtonAction={handleContinueClick}
-          secondaryButtonAction={handleClearFormClick}
-          primaryButtonText={t('Continue')}
-          secondaryButtonText={t('Clear form')}
-          type="info"
-        />
-      ) : (
-        <ExploreAlert
-          title={t('No form settings were maintained')}
-          bodyText={t(
-            'We were unable to carry over any controls when switching to this new dataset.',
-          )}
-          primaryButtonAction={handleContinueClick}
-          primaryButtonText={t('Continue')}
-          type="warning"
-        />
-      ),
-    [handleClearFormClick, handleContinueClick, hasControlsTransferred],
-  );
-
   const dataTabHasHadNoErrors = useResetOnChangeRef(
     () => false,
     form_data.viz_type,
@@ -755,7 +614,6 @@ export const ControlPanelsContainer = (props: ControlPanelsContainerProps) => {
             expandIconPosition="right"
             ghost
           >
-            {showDatasourceAlert && <DatasourceAlert />}
             {querySections.map(renderControlPanelSection)}
           </Collapse>
         </Tabs.TabPane>

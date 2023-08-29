@@ -43,11 +43,10 @@ export function getControlsState(state, inputFormData) {
   const formData = { ...inputFormData };
   const vizType =
     formData.viz_type || state.common?.conf.DEFAULT_VIZ_TYPE || 'table';
-
-  handleDeprecatedControls(formData);
+  
+  // handleDeprecatedControls(formData);
   const controlsState = getAllControlsState(
     vizType,
-    state.datasource.type,
     state,
     formData,
   );
@@ -61,11 +60,10 @@ export function getControlsState(state, inputFormData) {
 }
 
 export function applyDefaultFormData(inputFormData) {
-  const datasourceType = inputFormData.datasource.split('__')[1];
+  // const datasourceType = inputFormData.datasource.split('__')[1];
   const vizType = inputFormData.viz_type;
   const controlsState = getAllControlsState(
     vizType,
-    datasourceType,
     null,
     inputFormData,
   );

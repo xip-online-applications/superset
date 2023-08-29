@@ -165,56 +165,56 @@ const RightMenu = ({
   const isAdmin = isUserAdmin(user);
   const showUploads = allowUploads || isAdmin;
   const dropdownItems: MenuObjectProps[] = [
-    {
-      label: t('Data'),
-      icon: 'fa-database',
-      childs: [
-        {
-          label: t('Connect database'),
-          name: GlobalMenuDataOptions.DB_CONNECTION,
-          perm: canDatabase && !nonExamplesDBConnected,
-        },
-        {
-          label: t('Create dataset'),
-          name: GlobalMenuDataOptions.DATASET_CREATION,
-          url: '/dataset/add/',
-          perm: canDataset && nonExamplesDBConnected,
-        },
-        {
-          label: t('Connect Google Sheet'),
-          name: GlobalMenuDataOptions.GOOGLE_SHEETS,
-          perm: canDatabase && HAS_GSHEETS_INSTALLED,
-        },
-        {
-          label: t('Upload CSV to database'),
-          name: 'Upload a CSV',
-          url: '/csvtodatabaseview/form',
-          perm: canUploadCSV && showUploads,
-          disable: isAdmin && !allowUploads,
-        },
-        {
-          label: t('Upload columnar file to database'),
-          name: 'Upload a Columnar file',
-          url: '/columnartodatabaseview/form',
-          perm: canUploadColumnar && showUploads,
-          disable: isAdmin && !allowUploads,
-        },
-        {
-          label: t('Upload Excel file to database'),
-          name: 'Upload Excel',
-          url: '/exceltodatabaseview/form',
-          perm: canUploadExcel && showUploads,
-          disable: isAdmin && !allowUploads,
-        },
-      ],
-    },
-    {
-      label: t('SQL query'),
-      url: '/superset/sqllab?new=true',
-      icon: 'fa-fw fa-search',
-      perm: 'can_sqllab',
-      view: 'Superset',
-    },
+    // {
+    //   label: t('Data'),
+    //   icon: 'fa-database',
+    //   childs: [
+    //     {
+    //       label: t('Connect database'),
+    //       name: GlobalMenuDataOptions.DB_CONNECTION,
+    //       perm: canDatabase && !nonExamplesDBConnected,
+    //     },
+    //     {
+    //       label: t('Create dataset'),
+    //       name: GlobalMenuDataOptions.DATASET_CREATION,
+    //       url: '/dataset/add/',
+    //       perm: canDataset && nonExamplesDBConnected,
+    //     },
+    //     {
+    //       label: t('Connect Google Sheet'),
+    //       name: GlobalMenuDataOptions.GOOGLE_SHEETS,
+    //       perm: canDatabase && HAS_GSHEETS_INSTALLED,
+    //     },
+    //     {
+    //       label: t('Upload CSV to database'),
+    //       name: 'Upload a CSV',
+    //       url: '/csvtodatabaseview/form',
+    //       perm: canUploadCSV && showUploads,
+    //       disable: isAdmin && !allowUploads,
+    //     },
+    //     {
+    //       label: t('Upload columnar file to database'),
+    //       name: 'Upload a Columnar file',
+    //       url: '/columnartodatabaseview/form',
+    //       perm: canUploadColumnar && showUploads,
+    //       disable: isAdmin && !allowUploads,
+    //     },
+    //     {
+    //       label: t('Upload Excel file to database'),
+    //       name: 'Upload Excel',
+    //       url: '/exceltodatabaseview/form',
+    //       perm: canUploadExcel && showUploads,
+    //       disable: isAdmin && !allowUploads,
+    //     },
+    //   ],
+    // },
+    // {
+    //   label: t('SQL query'),
+    //   url: '/superset/sqllab?new=true',
+    //   icon: 'fa-fw fa-search',
+    //   perm: 'can_sqllab',
+    //   view: 'Superset',
+    // },
     {
       label: t('Chart'),
       url: Number.isInteger(dashboardId)

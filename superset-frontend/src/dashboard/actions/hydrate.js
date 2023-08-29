@@ -49,7 +49,6 @@ import getEmptyLayout from 'src/dashboard/util/getEmptyLayout';
 import getFilterConfigsFromFormdata from 'src/dashboard/util/getFilterConfigsFromFormdata';
 import getLocationHash from 'src/dashboard/util/getLocationHash';
 import newComponentFactory from 'src/dashboard/util/newComponentFactory';
-import { TIME_RANGE } from 'src/visualizations/FilterBox/FilterBox';
 import { URL_PARAMS } from 'src/constants';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { ResourceStatus } from 'src/hooks/apiResources/apiResources';
@@ -58,6 +57,7 @@ import extractUrlParams from '../util/extractUrlParams';
 import { updateColorSchema } from './dashboardInfo';
 import updateComponentParentsList from '../util/updateComponentParentsList';
 import { FilterBarOrientation } from '../types';
+import { TIME_FILTER_MAP } from 'src/explore/constants';
 
 export const HYDRATE_DASHBOARD = 'HYDRATE_DASHBOARD';
 
@@ -234,7 +234,7 @@ export const hydrateDashboard =
           columns,
           labels,
           scopes: scopesByChartId,
-          isDateFilter: Object.keys(columns).includes(TIME_RANGE),
+          isDateFilter: Object.keys(columns).includes(TIME_FILTER_MAP.time_range),
         };
       }
 

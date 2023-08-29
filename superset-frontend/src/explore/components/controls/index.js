@@ -40,12 +40,11 @@ import MetricsControl from './MetricControl/MetricsControl';
 import AdhocFilterControl from './FilterControl/AdhocFilterControl';
 import FilterBoxItemControl from './FilterBoxItemControl';
 import ConditionalFormattingControl from './ConditionalFormattingControl';
-import DndColumnSelectControl, {
-  DndColumnSelect,
-  DndFilterSelect,
-  DndMetricSelect,
-} from './DndColumnSelectControl';
 import XAxisSortControl from './XAxisSortControl';
+import {DndCubeSelect} from "./DndColumnSelectControl/DndCubeSelect";
+import CubeAdHocFilterControl from "./DndColumnSelectControl/CubeAdHocFilterControl";
+import CubeCrossFilterControl from "./DndColumnSelectControl/CubeCrossFilterControl";
+import ActionButtonControl from "./DndColumnSelectControl/ActionButtonControl";
 
 const controlMap = {
   AnnotationLayerControl,
@@ -56,10 +55,6 @@ const controlMap = {
   ColorSchemeControl,
   DatasourceControl,
   DateFilterControl,
-  DndColumnSelectControl,
-  DndColumnSelect,
-  DndFilterSelect,
-  DndMetricSelect,
   FixedOrMetricControl,
   HiddenControl,
   SelectAsyncControl,
@@ -76,6 +71,10 @@ const controlMap = {
   FilterBoxItemControl,
   ConditionalFormattingControl,
   XAxisSortControl,
+  DndCubeSelect,
+  CubeAdHocFilterControl,
+  CubeCrossFilterControl,
+  ActionButtonControl,
   ...sharedControlComponents,
 };
 export default controlMap;

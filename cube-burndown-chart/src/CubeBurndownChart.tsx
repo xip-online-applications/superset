@@ -32,7 +32,7 @@ const Styles = styled.div<CubeBurndownChartStylesProps>`
 
 
 export default function CubeBurndownChart(props: CubeBurndownChartProps) {
-  const { height, width, filters} = props;
+  const { height, width, filters, cubeConfig} = props;
   const [total, setTotal] = React.useState(0);
   const [data, setData] = React.useState({
     labels: [],
@@ -55,10 +55,9 @@ export default function CubeBurndownChart(props: CubeBurndownChartProps) {
   };
 
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
-
   const cubejsApi = cubejs(options.apiToken, options);
 
   const modifiedFilters = {};

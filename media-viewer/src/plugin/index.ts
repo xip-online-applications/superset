@@ -28,6 +28,7 @@ export default class MediaViewer extends ChartPlugin {
       description: 'Media Viewer',
       name: t('Media Viewer'),
       thumbnail,
+      tags: ['xip', 'cube'],
     });
 
     super({

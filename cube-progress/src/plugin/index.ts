@@ -39,6 +39,7 @@ export default class CubeProgress extends ChartPlugin {
       description: 'Cube Progress',
       name: t('Cube Progress'),
       thumbnail,
+      tags: ['xip', 'cube'],
     });
 
     super({

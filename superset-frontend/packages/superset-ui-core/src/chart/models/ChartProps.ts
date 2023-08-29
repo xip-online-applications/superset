@@ -109,6 +109,8 @@ export interface ChartPropsConfig {
   inputRef?: RefObject<any>;
   /** Theme object */
   theme: SupersetTheme;
+
+  cubeConfig: { api_token: string; api_url: string };
 }
 
 const DEFAULT_WIDTH = 800;
@@ -158,6 +160,7 @@ export default class ChartProps<FormData extends RawFormData = RawFormData> {
   emitCrossFilters?: boolean;
 
   theme: SupersetTheme;
+  cubeConfig: { api_token: string; api_url: string };
 
   constructor(config: ChartPropsConfig & { formData?: FormData } = {}) {
     const {
@@ -180,6 +183,7 @@ export default class ChartProps<FormData extends RawFormData = RawFormData> {
       inContextMenu = false,
       emitCrossFilters = false,
       theme,
+      cubeConfig,
     } = config;
     this.width = width;
     this.height = height;
@@ -202,6 +206,7 @@ export default class ChartProps<FormData extends RawFormData = RawFormData> {
     this.inContextMenu = inContextMenu;
     this.emitCrossFilters = emitCrossFilters;
     this.theme = theme;
+    this.cubeConfig = cubeConfig;
   }
 }
 
@@ -227,6 +232,7 @@ ChartProps.createSelector = function create(): ChartPropsSelector {
     input => input.inContextMenu,
     input => input.emitCrossFilters,
     input => input.theme,
+    input => input.cubeConfig,
     (
       annotationData,
       datasource,
@@ -247,6 +253,7 @@ ChartProps.createSelector = function create(): ChartPropsSelector {
       inContextMenu,
       emitCrossFilters,
       theme,
+      cubeConfig,
     ) =>
       new ChartProps({
         annotationData,
@@ -268,6 +275,7 @@ ChartProps.createSelector = function create(): ChartPropsSelector {
         inContextMenu,
         emitCrossFilters,
         theme,
+        cubeConfig,
       }),
   );
 };

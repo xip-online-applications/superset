@@ -70,9 +70,9 @@ const DatabaseList = lazy(
   () => import(/* webpackChunkName: "DatabaseList" */ 'src/pages/DatabaseList'),
 );
 
-const DatasetList = lazy(
-  () => import(/* webpackChunkName: "DatasetList" */ 'src/pages/DatasetList'),
-);
+// const DatasetList = lazy(
+//   () => import(/* webpackChunkName: "DatasetList" */ 'src/pages/DatasetList'),
+// );
 
 const DatasetCreation = lazy(
   () =>
@@ -147,10 +147,10 @@ export const routes: Routes = [
     path: '/chart/list/',
     Component: ChartList,
   },
-  {
-    path: '/tablemodelview/list/',
-    Component: DatasetList,
-  },
+  // {
+  //   path: '/tablemodelview/list/',
+  //   Component: DatasetList,
+  // },
   {
     path: '/databaseview/list/',
     Component: DatabaseList,

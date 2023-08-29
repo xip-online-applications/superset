@@ -36,9 +36,10 @@ export default class SupersetXip extends ChartPlugin {
   constructor() {
     const metadata = new ChartMetadata({
       category: t('XIP'),
-      description: t('Superset Xip'),
-      name: t('Superset Xip'),
+      description: t('Xip Superset Formbuilder'),
+      name: t('Xip Superset Formbuilder'),
       thumbnail,
+      tags: ['xip', 'cube', 'formbuilder'],
     });
 
     super({

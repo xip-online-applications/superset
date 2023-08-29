@@ -18,33 +18,42 @@
  */
 import { ChartProps } from '@superset-ui/core';
 
-export default function transformProps(chartProps: ChartProps) {
-  const { width, height, formData , datasource} = chartProps;
-  const { extraFormData, styleTemplate, allColumns,    blockingAction,
-    actionConfig, } = formData;
+export default function transformProps(chartProps: ChartProps & { cubeConfig: { api_url: string; api_token: string } }) {
+  const { width, height, formData, cubeConfig } = chartProps;
+  const {
+    extraFormData,
+    styleTemplate,
+    blockingAction,
+    actionConfig,
+    cube,
+    rowLimit,
+    cubeFilters,
+    cubeCrossFilters,
+    tableSize,
+    cubeDetailsCrossFilters,
+    cubeDetails,
+    actionButtons,
+    actionButtonsDetails
+  } = formData;
   const filters = extraFormData.filters || [];
 
-  // @ts-ignore
-  const dataset = datasource.tableName;
-
-  const dimensions = allColumns;
-  let actions = [];
-
-  try {
-    actions = JSON.parse(actionConfig);
-  } catch (e) {
-    console.log('error parsing actions', e);
-  }
 
   return {
     width,
     height,
     // and now your control data, manipulated as needed, and passed through as props!
-    dataset,
     filters,
     styleTemplate,
-    dimensions,
-    actions,
     blockingAction,
+    cube,
+    rowLimit,
+    cubeFilters,
+    cubeCrossFilters,
+    tableSize,
+    cubeDetailsCrossFilters : cubeDetailsCrossFilters ?? [],
+    cubeDetails : cubeDetails ?? [],
+    actionButtons,
+    actionButtonsDetails,
+    cubeConfig
   };
 }

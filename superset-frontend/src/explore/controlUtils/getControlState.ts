@@ -18,7 +18,6 @@
  */
 import { ReactNode } from 'react';
 import {
-  DatasourceType,
   ensureIsArray,
   JsonValue,
   QueryFormData,
@@ -166,12 +165,11 @@ export function getControlState(
 
 export function getAllControlsState(
   vizType: string,
-  datasourceType: DatasourceType,
   state: ControlPanelState | null,
   formData: QueryFormData,
 ) {
   const controlsState = {};
-  getSectionsToRender(vizType, datasourceType).forEach(section =>
+  getSectionsToRender(vizType).forEach(section =>
     section.controlSetRows.forEach(fieldsetRow =>
       fieldsetRow.forEach((field: CustomControlItem) => {
         if (field?.config && field.name) {

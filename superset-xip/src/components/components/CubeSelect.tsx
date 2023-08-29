@@ -22,7 +22,6 @@ export function CubeSelect({ field, handleFormInput, formData, filters }) {
   let selectedValue = formData[field.field_id];
   const uniqueDimensions: Array<string> = [... new Set(field.field_options.map((option) => field.field_dataset + "." + option.dimentions))] as Array<string>;
 
-
   const handleChange = (value: string) => {
     handleFormInput(field.field_id, value)
   };
@@ -71,16 +70,17 @@ export function CubeSelect({ field, handleFormInput, formData, filters }) {
       });
   }, [field.field_options]);
 
-  const appliedFilters = filters.find((filter) => filter.dataset === field.field_dataset);
+  const appliedFilters = filters.find((filter) => filter.cube === field.field_dataset);
 
   useEffect(() => {
     if (appliedFilters) {
+
       if (formData[field.field_id] != undefined && formData[field.field_id] !== '') {
         try {
           const currentValue = JSON.parse(formData[field.field_id]);
 
           if (
-            currentValue[field.field_dataset + "." + appliedFilters.col] === appliedFilters.val[0]
+            currentValue[appliedFilters.col] === appliedFilters.val[0]
           ) {
             // Already applied
             return;
@@ -91,9 +91,9 @@ export function CubeSelect({ field, handleFormInput, formData, filters }) {
       }
 
       const filter = {
-        "member": field.field_dataset + "." + appliedFilters.col,
-        "operator": "equals",
-        "values": appliedFilters.val
+        "member": appliedFilters.col,
+        "operator": appliedFilters.op,
+        "values": Array.isArray(appliedFilters.val) ? appliedFilters.val : [ appliedFilters.val ]
       };
 
       cubejsApi

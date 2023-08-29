@@ -26,11 +26,11 @@ import {
   UPDATE_DASHBOARD_FILTERS_SCOPE,
 } from '../actions/dashboardFilters';
 import { HYDRATE_DASHBOARD } from '../actions/hydrate';
-import { TIME_RANGE } from '../../visualizations/FilterBox/FilterBox';
 import { DASHBOARD_ROOT_ID } from '../util/constants';
 import getFilterConfigsFromFormdata from '../util/getFilterConfigsFromFormdata';
 import { buildActiveFilters } from '../util/activeDashboardFilters';
 import { getChartIdAndColumnFromFilterKey } from '../util/getDashboardFilterKey';
+import { TIME_FILTER_MAP } from 'src/explore/constants';
 
 export const DASHBOARD_FILTER_SCOPE_GLOBAL = {
   scope: [DASHBOARD_ROOT_ID],
@@ -79,7 +79,7 @@ export default function dashboardFiltersReducer(dashboardFilters = {}, action) {
         labels,
         scopes,
         isInstantFilter: !!form_data.instant_filtering,
-        isDateFilter: Object.keys(columns).includes(TIME_RANGE),
+        isDateFilter: Object.keys(columns).includes(TIME_FILTER_MAP.time_range),
       };
 
       return newFilter;

@@ -33,6 +33,7 @@ interface CubeBurndownChartCustomizeProps {
   totalColumn: string;
   totalQuery: string;
   valueQuery: string;
+  cubeConfig: { api_url: string; api_token: string };
 }
 
 export type CubeBurndownChartQueryFormData = QueryFormData &

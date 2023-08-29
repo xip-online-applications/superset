@@ -767,11 +767,6 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
       if (!dbToUpdate?.ssh_tunnel) {
         // make sure that button spinner animates
         setLoading(true);
-        const errors = await getValidation(dbToUpdate, true);
-        if ((validationErrors && !isEmpty(validationErrors)) || errors) {
-          setLoading(false);
-          return;
-        }
         // end spinner animation
         setLoading(false);
       }
@@ -1632,7 +1627,7 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
             value: target.value,
           })
         }
-        getValidation={() => getValidation(db)}
+        getValidation={() => {}}
         validationErrors={validationErrors}
         getPlaceholder={getPlaceholder}
       />
@@ -1922,7 +1917,6 @@ const DatabaseModal: FunctionComponent<DatabaseModalProps> = ({
             dbModel={dbModel}
             editNewDb={editNewDb}
           />
-          {showCTAbtns && renderCTABtns()}
           {renderFinishState()}
         </>
       ) : (

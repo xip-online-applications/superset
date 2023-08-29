@@ -39,6 +39,8 @@ import { ResourceStatus } from 'src/hooks/apiResources/apiResources';
 import ChartRenderer from './ChartRenderer';
 import { ChartErrorMessage } from './ChartErrorMessage';
 import { getChartRequiredFieldsMissingMessage } from '../../utils/getChartRequiredFieldsMissingMessage';
+import {createSelector} from "reselect";
+import {useSelector} from "react-redux";
 
 const propTypes = {
   annotationData: PropTypes.object,
@@ -54,6 +56,7 @@ const propTypes = {
   // formData contains chart's own filter parameter
   // and merged with extra filter that current dashboard applying
   formData: PropTypes.object.isRequired,
+  cubeConfig: PropTypes.object.isRequired,
   labelColors: PropTypes.object,
   sharedLabelColors: PropTypes.object,
   width: PropTypes.number,

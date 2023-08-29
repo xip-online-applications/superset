@@ -17,14 +17,12 @@
  * under the License.
  */
 
-import { Dispatch, AnyAction } from 'redux';
+import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { Dataset } from '@superset-ui/chart-controls';
 import { SupersetClient } from '@superset-ui/core';
 import { addDangerToast } from 'src/components/MessageToasts/actions';
 import { getClientErrorObject } from 'src/utils/getClientErrorObject';
-import { updateFormDataByDatasource } from './exploreActions';
-import { ExplorePageState } from '../types';
 
 export const SET_DATASOURCE = 'SET_DATASOURCE';
 export interface SetDatasource {
@@ -34,17 +32,6 @@ export interface SetDatasource {
 export function setDatasource(datasource: Dataset) {
   return { type: SET_DATASOURCE, datasource };
 }
-
-export function changeDatasource(newDatasource: Dataset) {
-  return function (dispatch: Dispatch, getState: () => ExplorePageState) {
-    const {
-      explore: { datasource: prevDatasource },
-    } = getState();
-    dispatch(setDatasource(newDatasource));
-    dispatch(updateFormDataByDatasource(prevDatasource, newDatasource));
-  };
-}
-
 export function saveDataset({
   schema,
   sql,
@@ -71,7 +58,6 @@ export function saveDataset({
         }),
       });
       // Update form_data to point to new dataset
-      dispatch(changeDatasource(data));
       return data;
     } catch (error) {
       getClientErrorObject(error).then(e => {
@@ -84,7 +70,6 @@ export function saveDataset({
 
 export const datasourcesActions = {
   setDatasource,
-  changeDatasource,
   saveDataset,
 };
 

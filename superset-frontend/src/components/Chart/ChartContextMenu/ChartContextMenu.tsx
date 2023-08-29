@@ -45,7 +45,6 @@ import { updateDataMask } from 'src/dataMask/actions';
 import { DrillDetailMenuItems } from '../DrillDetail';
 import { getMenuAdjustedY } from '../utils';
 import { MenuItemTooltip } from '../DisabledMenuItemTooltip';
-import { DrillByMenuItems } from '../DrillBy/DrillByMenuItems';
 
 export enum ContextMenuItem {
   CrossFilter,
@@ -111,11 +110,6 @@ const ChartContextMenu = (
     canExplore &&
     isDisplayed(ContextMenuItem.DrillToDetail);
 
-  const showDrillBy =
-    isFeatureEnabled(FeatureFlag.DRILL_BY) &&
-    canExplore &&
-    isDisplayed(ContextMenuItem.DrillBy);
-
   const showCrossFilters =
     isFeatureEnabled(FeatureFlag.DASHBOARD_CROSS_FILTERS) &&
     isDisplayed(ContextMenuItem.CrossFilter);
@@ -130,9 +124,6 @@ const ChartContextMenu = (
   }
   if (showDrillToDetail) {
     itemsCount += 2; // Drill to detail always has 2 top-level menu items
-  }
-  if (showDrillBy) {
-    itemsCount += 1;
   }
   if (itemsCount === 0) {
     itemsCount = 1; // "No actions" appears if no actions in menu
@@ -221,25 +212,6 @@ const ChartContextMenu = (
         onSelection={onSelection}
         submenuIndex={showCrossFilters ? 2 : 1}
         {...(additionalConfig?.drillToDetail || {})}
-      />,
-    );
-  }
-  if (showDrillBy) {
-    let submenuIndex = 0;
-    if (showCrossFilters) {
-      submenuIndex += 1;
-    }
-    if (showDrillToDetail) {
-      submenuIndex += 2;
-    }
-    menuItems.push(
-      <DrillByMenuItems
-        drillByConfig={filters?.drillBy}
-        onSelection={onSelection}
-        formData={formData}
-        contextMenuY={clientY}
-        submenuIndex={submenuIndex}
-        {...(additionalConfig?.drillBy || {})}
       />,
     );
   }

@@ -30,16 +30,27 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'all_columns',
+            name: 'cube_single',
             config: {
-              ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Required Columns in the datafields'),
-              validators: [validateNonEmpty],
-            },
-          },
+              type: 'DndCubeSelect',
+              label: t('Cube Single Column'),
+              description: t('Cube Column to display'),
+              default: [],
+              multi: false,
+            }
+          }
         ],
-        ['adhoc_filters'],
+        [
+          {
+            name: 'cube-filters',
+            config: {
+              type: 'CubeAdHocFilterControl',
+              label: t('Cube Filters'),
+              description: t('Cube Filters to display'),
+              default: [],
+            }
+          }
+        ],
       ],
     },
     {

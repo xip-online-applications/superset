@@ -42,6 +42,7 @@ import {
 import shortid from 'shortid';
 import {
   BootstrapUser,
+  CubeConfig,
   UndefinedUser,
   UserWithPermissionsAndRoles,
 } from 'src/types/bootstrapTypes';
@@ -60,6 +61,22 @@ const noopReducer =
 const bootstrapData = getBootstrapData();
 
 export const USER_LOADED = 'USER_LOADED';
+export const CUBE_LOADED = 'CUBE_LOADED';
+
+export type CubeLoadedAction = {
+  type: typeof CUBE_LOADED;
+  cubeConfig: CubeConfig;
+};
+
+const cubeReducer = (
+    cubeConfig = bootstrapData.common.cube_config || {},
+    action: CubeLoadedAction,
+): CubeConfig | {} => {
+  if (action.type === CUBE_LOADED) {
+    return action.cubeConfig;
+  }
+  return cubeConfig;
+};
 
 export type UserLoadedAction = {
   type: typeof USER_LOADED;
@@ -116,6 +133,7 @@ const reducers = {
   messageToasts: messageToastReducer,
   common: noopReducer(bootstrapData.common),
   user: userReducer,
+  cube: cubeReducer,
   impressionId: noopReducer(shortid.generate()),
   charts,
   datasources: CombinedDatasourceReducers,

@@ -63,7 +63,6 @@ class Slice(Base):  # type: ignore # pylint: disable=too-few-public-methods
     __tablename__ = "slices"
 
     id = Column(Integer, primary_key=True)
-    datasource_id = Column(Integer)
     params = Column(Text)
     slice_name = Column(String(250))
     viz_type = Column(String(250))

@@ -40,6 +40,13 @@ export type Filter = {
   value: string | number;
 };
 
+export type CubeFilterSelectOption = {
+  cube: string;
+  col: string;
+  op: string;
+  val: string;
+}
+
 export interface DashboardTableProps {
   addDangerToast: (message: string) => void;
   addSuccessToast: (message: string) => void;

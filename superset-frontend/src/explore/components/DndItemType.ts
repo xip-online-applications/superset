@@ -37,4 +37,7 @@ export enum DndItemType {
 
   // an adhoc filter option
   FilterOption = 'filterOption',
+
+  CubeDimension = 'cubeDimension',
+  CubeMeasure = 'cubeMeasure',
 }

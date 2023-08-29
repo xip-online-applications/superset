@@ -16,12 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {createRef, useEffect} from 'react';
-import cubejs from "@cubejs-client/core";
+import React, { createRef, useEffect } from 'react';
+import cubejs, { CubejsApi } from '@cubejs-client/core';
 import { styled } from '@superset-ui/core';
-import { CubeProgressProps, CubeProgressStylesProps } from './types';
+import {
+  CubeCrossFilterSelectOptionDuplicate,
+  CubeFilterSelectOptionDuplicate,
+  CubeProgressProps,
+  CubeProgressStylesProps,
+} from './types';
 import { Progress } from 'antd';
-import Mustache from 'mustache';
 
 const Styles = styled.div<CubeProgressStylesProps>`
   padding: ${({ theme }) => theme.gridUnit * 4}px;
@@ -31,109 +35,197 @@ const Styles = styled.div<CubeProgressStylesProps>`
 `;
 
 export default function CubeProgress(props: CubeProgressProps) {
-  const { height, width, filters, dimensions, progressType, totalQuery, valueQuery} = props;
+  const {
+    height,
+    width,
+    filters,
+    cubeFilters,
+    values,
+    progressType,
+    totalValue,
+    cubeCrossFilters,
+    layout,
+    cubeConfig,
+  } = props;
+
   const [total, setTotal] = React.useState(0);
-  const [data, setData] = React.useState(JSON.parse(props.valueQuery).dimensions.map(() => 0));
-  const [percentage, setPercentage] = React.useState(JSON.parse(props.valueQuery).dimensions.map(() => 0));
+  const [data, setData] = React.useState(values.map(() => 0));
+  const [percentage, setPercentage] = React.useState(values.map(() => 0));
 
   const rootElem = createRef<HTMLDivElement>();
 
   const options = {
-    apiToken: 'd60cb603dde98ba3037f2de9eda44938',
-    apiUrl: 'https://odtest.xip.nl/cubejs-api/v1',
+    apiToken: cubeConfig.api_token,
+    apiUrl: cubeConfig.api_url,
   };
-
   const cubejsApi = cubejs(options.apiToken, options);
 
-  const modifiedFilters = {};
+  const transformFilters = (
+    nativeFilters: Array<CubeFilterSelectOptionDuplicate>,
+    crossFilters: Array<CubeCrossFilterSelectOptionDuplicate>
+  ): Array<CubeFilterSelectOptionDuplicate> => {
+    const filters = [...nativeFilters];
 
-  filters.forEach((filter) => {
-    modifiedFilters['filter_' + filter.col] = filter.val[0];
-  });
+    crossFilters.forEach((item) => {
+      const filterLeft = filters.find(
+        (filter) => filter.cube === item.cubeLeft && filter.col === item.colLeft
+      );
+      const filterRight = filters.find(
+        (filter) =>
+          filter.cube === item.cubeRight && filter.col === item.colRight
+      );
 
-  useEffect(() => {
-    if (!props.valueQuery) {
-      return;
-    }
-
-    let parsedValueQuery = Mustache.render(props.valueQuery, modifiedFilters);
-    const valueQuery = JSON.parse(parsedValueQuery);
-
-    if (valueQuery.filters[0]?.values?.length === 0 || valueQuery.filters[0]?.values[0] === "") {
-      return;
-    }
-
-    cubejsApi
-      .load(valueQuery)
-      .then((result) => {
-        const tempData = result.loadResponse.results[0].data;
-        const keys = Object.keys(tempData[0]);
-        const totals: Array<number> = [];
-
-        keys.forEach((key, index) => {
-          totals[index] = 0;
-          tempData.reduce((a: any, b: any) => {
-            const value = parseInt(b[key]);
-
-            if (!isNaN(value)) {
-              totals[index] += value;
-            }
-
-            return totals[index];
-          }, 0);
+      if (filterLeft) {
+        filters.push({
+          cube: item.cubeRight,
+          col: item.colRight,
+          op: filterLeft.op,
+          val: filterLeft.val,
         });
+      }
 
-        setData(totals);
-      });
+      if (filterRight) {
+        filters.push({
+          cube: item.cubeLeft,
+          col: item.colLeft,
+          op: filterRight.op,
+          val: filterRight.val,
+        });
+      }
+    });
 
-  }, [filters[0]?.val]);
+    return filters;
+  };
 
   useEffect(() => {
-    if (!props.totalQuery) {
+    if (values.length === 0) {
       return;
     }
 
-    let parsedTotalQuery = Mustache.render(props.totalQuery, modifiedFilters);
-    const totalQuery = JSON.parse(parsedTotalQuery);
-    console.log(totalQuery);
+    const measures = values.map((item) => item.value.name);
+    const cubeName = values.map((item) => item.value.cube_name)[0];
+    const combinedFilters = transformFilters(
+      [...filters, ...cubeFilters],
+      cubeCrossFilters
+    );
 
-    if (totalQuery.filters[0]?.values?.length === 0 || totalQuery.filters[0]?.values[0] === "") {
+    const applicableFilters = combinedFilters
+      .filter((item) => item.cube === cubeName)
+      .map((item) => {
+        return {
+          member: item.col,
+          operator: item.op,
+          values: Array.isArray(item.val) ? item.val : [item.val],
+        };
+      });
+
+    if (applicableFilters.length === 0) {
+      setData(values.map(() => 0));
       return;
     }
 
-    cubejsApi
-      .load(totalQuery)
-      .then((result) => {
-        const tempData = result.loadResponse.results[0].data[0];
-        const tempTotal = parseInt(tempData[Object.keys(tempData)[0]]);
-        setTotal(tempTotal);
-      });
+    const query = {
+      measures,
+      filters: applicableFilters,
+    };
 
-  }, [filters[0]?.val]);
+    cubejsApi.load(query).then((result: any) => {
+      setData(result.loadResponse.results[0].data[0]);
+    });
+  }, [values, cubeFilters, filters, cubeCrossFilters]);
 
   useEffect(() => {
-    const tempPercentage = data.map((value: number) => {
-      return Math.round((value / total) * 10000) / 100;
+    if (totalValue.length === 0) {
+      return;
+    }
+
+    const dimensions = totalValue.map((item) => item.value.name);
+    const cubeName = totalValue.map((item) => item.value.cube_name)[0];
+    const combinedFilters = transformFilters(
+      [...filters, ...cubeFilters],
+      cubeCrossFilters
+    );
+
+    const applicableFilters = combinedFilters
+      .filter((item) => item.cube === cubeName)
+      .map((item) => {
+        return {
+          member: item.col,
+          operator: item.op,
+          values: Array.isArray(item.val) ? item.val : [item.val],
+        };
+      });
+
+    if (applicableFilters.length === 0) {
+      setTotal(0);
+      return;
+    }
+
+    const query = {
+      dimensions,
+      limit: 1,
+      filters: applicableFilters,
+    };
+
+    cubejsApi.load(query).then((result: any) => {
+      setTotal(result.loadResponse.results[0].data[0]);
+    });
+  }, [totalValue, cubeFilters, filters, cubeCrossFilters]);
+
+  useEffect(() => {
+    if (data == undefined || total == undefined) {
+      setPercentage(values.map(() => 0));
+      return;
+    }
+    const tempPercentage = {};
+
+    values.forEach((item) => {
+      tempPercentage[item?.value?.name] =
+        Math.round(
+          ((data[item.value.name] ?? 0) / Object.values(total)[0]) * 10000
+        ) / 100;
     });
 
     setPercentage(tempPercentage);
   }, [total, data]);
 
+  const itemStyle = {
+    width:
+        progressType === 'line' ? '100%' : undefined,
+  };
+
+  const spaceStyle = {
+    display: "flex",
+    gap: "8px",
+    flexDirection:"column",
+    width:
+      layout === 'vertical' ? '100%' : Math.round(100 / values.length) + '%',
+    alignItems: progressType === 'line' ? 'flex-start' : 'center',
+  };
+
+  const parentStyle = {
+    display: 'flex',
+    flexDirection: layout === 'vertical' ? 'column' : 'row',
+    gap: '8px',
+  }
+
   return (
-    <Styles
-      ref={rootElem}
-      height={height}
-      width={width}
-    >
-      {percentage.map((percent, index) => {
-        return (
-          <Progress
-            key={index}
-            type={progressType}
-            percent={percent}
-          />
-        );
-      })}
+    <Styles ref={rootElem} height={height} width={width}>
+      <div style={parentStyle}>
+        {values.map((measure, index) => {
+          return (
+            <div style={spaceStyle}>
+              <span style={itemStyle}>{measure.value.shortTitle}</span>
+              <Progress
+                style={itemStyle}
+                key={index}
+                type={progressType}
+                percent={percentage[measure.value.name]}
+              />
+            </div>
+          );
+        })}
+      </div>
     </Styles>
   );
 }

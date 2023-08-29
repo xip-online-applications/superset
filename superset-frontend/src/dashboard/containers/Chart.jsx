@@ -88,6 +88,7 @@ function mapStateToProps(
     sharedLabelColors,
     slice: sliceEntities.slices[id],
     timeout: dashboardInfo.common.conf.SUPERSET_WEBSERVER_TIMEOUT,
+    cubeConfig: common.cube_config,
     filters: getActiveFilters() || EMPTY_OBJECT,
     formData,
     editMode: dashboardState.editMode,

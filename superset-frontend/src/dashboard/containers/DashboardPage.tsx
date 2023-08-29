@@ -35,10 +35,8 @@ import Loading from 'src/components/Loading';
 import {
   useDashboard,
   useDashboardCharts,
-  useDashboardDatasets,
 } from 'src/hooks/apiResources';
 import { hydrateDashboard } from 'src/dashboard/actions/hydrate';
-import { setDatasources } from 'src/dashboard/actions/datasources';
 import injectCustomCss from 'src/dashboard/util/injectCustomCss';
 import setupPlugins from 'src/setup/setupPlugins';
 
@@ -50,7 +48,6 @@ import {
 import { URL_PARAMS } from 'src/constants';
 import { getUrlParam } from 'src/utils/urlUtils';
 import { getFilterSets } from 'src/dashboard/actions/nativeFilters';
-import { setDatasetsStatus } from 'src/dashboard/actions/dashboardState';
 import {
   getFilterValue,
   getPermalinkValue,
@@ -151,16 +148,10 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const dashboardPageId = useSyncDashboardStateWithLocalStorage();
-  const { addDangerToast } = useToasts();
   const { result: dashboard, error: dashboardApiError } =
     useDashboard(idOrSlug);
   const { result: charts, error: chartsApiError } =
     useDashboardCharts(idOrSlug);
-  const {
-    result: datasets,
-    error: datasetsApiError,
-    status,
-  } = useDashboardDatasets(idOrSlug);
   const isDashboardHydrated = useRef(false);
 
   const error = dashboardApiError || chartsApiError;
@@ -190,10 +181,6 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
       window.removeEventListener('beforeunload', handleTabClose);
     };
   }, [dashboardPageId]);
-
-  useEffect(() => {
-    dispatch(setDatasetsStatus(status));
-  }, [dispatch, status]);
 
   useEffect(() => {
     // eslint-disable-next-line consistent-return
@@ -272,16 +259,6 @@ export const DashboardPage: FC<PageProps> = ({ idOrSlug }: PageProps) => {
       sharedLabelColor.clear();
     };
   }, [metadata?.color_namespace]);
-
-  useEffect(() => {
-    if (datasetsApiError) {
-      addDangerToast(
-        t('Error loading chart datasources. Filters may not work correctly.'),
-      );
-    } else {
-      dispatch(setDatasources(datasets));
-    }
-  }, [addDangerToast, datasets, datasetsApiError, dispatch]);
 
   if (error) throw error; // caught in error boundary
   if (!readyToRender || !isDashboardHydrated.current) return <Loading />;

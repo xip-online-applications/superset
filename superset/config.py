@@ -383,6 +383,12 @@ CURRENCIES = ["USD", "EUR", "GBP", "INR", "MXN", "JPY", "CNY"]
 # For example, DEFAULT_FEATURE_FLAGS = { 'FOO': True, 'BAR': False } here
 # and FEATURE_FLAGS = { 'BAR': True, 'BAZ': True } in superset_config.py
 # will result in combined feature flags of { 'FOO': True, 'BAR': True, 'BAZ': True }
+
+CUBE_CONFIG: dict[str, str] = {
+    "api_token": os.environ.get("CUBE_SECRET_KEY"),
+    "api_url": os.environ.get("CUBE_API_URL"),
+}
+
 DEFAULT_FEATURE_FLAGS: dict[str, bool] = {
     # Experimental feature introducing a client (browser) cache
     "CLIENT_CACHE": False,  # deprecated
