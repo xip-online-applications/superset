@@ -37,7 +37,7 @@ export default class XipPreset extends Preset {
         new LoggedInDashboardCard().configure({ key: 'logged-in-dashboard-card' }),
         new MediaViewer().configure({ key: 'media-viewer' }),
         new CubeProgress().configure({ key: 'cube-progress' }),
-        new CubeBurndownChart().configure({ key: 'cube-burndown-chart' }),
+        // new CubeBurndownChart().configure({ key: 'cube-burndown-chart' }),
         new CubeNativeSuperset().configure({ key: 'cube-native-superset' }),
       ],
     });
