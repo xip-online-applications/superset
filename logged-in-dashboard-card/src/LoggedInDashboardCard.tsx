@@ -55,7 +55,7 @@ export default function LoggedInDashboardCard(props: LoggedInDashboardCardProps)
   });
 
   useEffect(() => {
-    getMe(undefined, undefined).then((user) => setUser(user.result));
+    getMe().then((user) => setUser(user.result));
   }, []);
 
   return (
